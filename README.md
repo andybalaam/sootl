@@ -9,8 +9,12 @@ when the screen changes, in Elm.
 
 ## License
 
-Sootl is Copyright (C) 2016 by Andy Balaam and released under the GPLv2, or
-at your option, any later version.
+Sootl is Copyright (C) 2016 Andy Balaam.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
 See [LICENSE.md](LICENSE.md) for details.
 
