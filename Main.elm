@@ -1,7 +1,9 @@
+import AnimationFrame exposing (times)
 import Html exposing (Html)
 import Html.App exposing (programWithFlags)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Time exposing(Time)
 import Window
 
 
@@ -11,7 +13,38 @@ type alias Flags =
     }
 
 
-type Msg = Resize Int Int
+type Msg = Resize Int Int | NewFrame Time
+
+
+type HitShape = Circle Float Float Float
+
+
+hitCircle : Float -> Float -> Float -> HitShape
+hitCircle x y r = Circle x y r
+
+
+type alias Light =
+    Float ->
+        { hitboxes : List HitShape
+        , svgs     : List (Svg Msg)
+        }
+
+
+type alias Level =
+    { lights : List Light
+    }
+
+
+emptyLevel : Level
+emptyLevel =
+    { lights =
+        [
+            \t ->
+                { hitboxes = []
+                , svgs = [text' [ x "20", y "20" ] [ text "Missing Level!" ] ]
+                }
+        ]
+    }
 
 
 type alias Model =
@@ -19,6 +52,27 @@ type alias Model =
         { width : Int
         , height : Int
         }
+    , startTime : Time
+    , time : Time
+    , levels : List Level
+    }
+
+
+level0 : Level
+level0 =
+    { lights =
+        [
+            \t ->
+                { hitboxes = []
+                , svgs =
+                    [ circle
+                        [ cx <| toString <| 20 + 10 * t
+                        , cy "20", r "10"
+                        ]
+                        []
+                    ]
+                }
+        ]
     }
 
 
@@ -29,6 +83,12 @@ init flags =
             { width = flags.width
             , height = flags.height
             }
+        , startTime = -1
+        , time = 0
+        , levels =
+            [
+                level0
+            ]
         }
     , Cmd.none
     )
@@ -45,7 +105,7 @@ view model =
         [ width  <| toString sw
         , height <| toString sh
         ]
-        [ rect
+        ( [ rect
             [ x "0"
             , y "0"
             , width (toString model.screen.width)
@@ -62,9 +122,19 @@ view model =
             [ text
                 ((toString model.screen.width)
                 ++ ", "
-                ++ (toString model.screen.height))
+                ++ (toString model.screen.height)
+                ++ " at "
+                ++ (toString (round ((model.time - model.startTime) / 1000))))
             ]
         ]
+        ++ ( List.concat <| List.map (\lig -> (lig 0).svgs) ( firstLevel model.levels ).lights ) )
+
+
+firstLevel : List Level -> Level
+firstLevel levels =
+    case (List.head levels) of
+        Just lev  -> lev
+        Nothing -> emptyLevel   -- Error - levels should not be empty
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -72,13 +142,17 @@ update msg model =
     let m =
         case msg of
             Resize w h -> {model | screen = {width = w, height = h}}
+            NewFrame t -> {model | time = t, startTime = if model.startTime == -1 then t else model.startTime}
     in
         (m, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Window.resizes (\size -> Resize size.width size.height)
+    Sub.batch
+        [ Window.resizes       (\size -> Resize size.width size.height)
+        , AnimationFrame.times (\time -> NewFrame time)
+        ]
 
 
 main =
@@ -88,6 +162,3 @@ main =
      , update = update
      , subscriptions = subscriptions
      }
-
-
-
