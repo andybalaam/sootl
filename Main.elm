@@ -107,29 +107,38 @@ view model =
         [ width  <| toString sw
         , height <| toString sh
         ]
-        ( [ rect
-            [ x "0"
-            , y "0"
-            , width (toString model.screen.width)
-            , height (toString model.screen.height)
-            , fill "#eeffee"
-            ]
-            []
-        , text'
-            [ x <| toString <| sw / 2
-            , y <| toString <| sh / 2
-            , fontSize <| toString <| sh / 10
-            , textAnchor "middle"
-            ]
-            [ text
-                ((toString model.screen.width)
-                ++ ", "
-                ++ (toString model.screen.height)
-                ++ " at "
-                ++ (toString (round time)))
-            ]
+        [g [] ((viewExtra model time sw sh) ++ (viewLights model time))]
+
+
+viewExtra : Model -> Time -> Float -> Float -> List (Svg Msg)
+viewExtra model time sw sh =
+    [ rect
+        [ x "0"
+        , y "0"
+        , width (toString model.screen.width)
+        , height (toString model.screen.height)
+        , fill "#eeffee"
         ]
-        ++ ( List.concat <| List.map (\lig -> (lig time).svgs) ( firstLevel model.levels ).lights ) )
+        []
+    , text'
+        [ x <| toString <| sw / 2
+        , y <| toString <| sh / 2
+        , fontSize <| toString <| sh / 10
+        , textAnchor "middle"
+        ]
+        [ text
+            ((toString model.screen.width)
+            ++ ", "
+            ++ (toString model.screen.height)
+            ++ " at "
+            ++ (toString (round time)))
+        ]
+    ]
+
+
+viewLights : Model -> Time -> List (Svg Msg)
+viewLights model time =
+    ( List.concat <| List.map (\lig -> (lig time).svgs) ( firstLevel model.levels ).lights )
 
 
 firstLevel : List Level -> Level
