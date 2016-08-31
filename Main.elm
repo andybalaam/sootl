@@ -67,7 +67,8 @@ level0 =
                 , svgs =
                     [ circle
                         [ cx <| toString <| 20 + 10 * t
-                        , cy "20", r "10"
+                        , cy "20"
+                        , r <| toString <| 10 + 5 * t
                         ]
                         []
                     ]
@@ -100,6 +101,7 @@ view model =
     let
         sw = model.screen.width  - 0
         sh = model.screen.height - 0
+        time = (model.time - model.startTime) / 1000
     in
         svg
         [ width  <| toString sw
@@ -124,10 +126,10 @@ view model =
                 ++ ", "
                 ++ (toString model.screen.height)
                 ++ " at "
-                ++ (toString (round ((model.time - model.startTime) / 1000))))
+                ++ (toString (round time)))
             ]
         ]
-        ++ ( List.concat <| List.map (\lig -> (lig 0).svgs) ( firstLevel model.levels ).lights ) )
+        ++ ( List.concat <| List.map (\lig -> (lig time).svgs) ( firstLevel model.levels ).lights ) )
 
 
 firstLevel : List Level -> Level
