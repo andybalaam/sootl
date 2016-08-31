@@ -143,10 +143,23 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     let m =
         case msg of
-            Resize w h -> {model | screen = {width = w, height = h}}
-            NewFrame t -> {model | time = t, startTime = if model.startTime == -1 then t else model.startTime}
+            Resize w h -> updateResize w h model
+            NewFrame t -> updateNewFrame t model
     in
         (m, Cmd.none)
+
+
+updateResize : Int -> Int -> Model -> Model
+updateResize w h model =
+    {model | screen = {width = w, height = h}}
+
+
+updateNewFrame : Time -> Model -> Model
+updateNewFrame t model =
+    { model
+        | time = t
+        , startTime = if model.startTime == -1 then t else model.startTime
+    }
 
 
 subscriptions : Model -> Sub Msg
