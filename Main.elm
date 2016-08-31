@@ -99,31 +99,35 @@ init flags =
 view : Model -> Html Msg
 view model =
     let
+        time = (model.time - model.startTime) / 1000
         sw = model.screen.width  - 0
         sh = model.screen.height - 0
-        time = (model.time - model.startTime) / 1000
+        min = if sw < sh then sw else sh
+        tx = (sw - min) / 2
+        ty = (sh - min) / 2
+        trans = "translate(" ++ (toString tx) ++ "," ++ (toString ty) ++ "),scale(" ++ (toString (min/200)) ++ "),translate(100, 100)"
     in
         svg
         [ width  <| toString sw
         , height <| toString sh
         ]
-        [g [] ((viewExtra model time sw sh) ++ (viewLights model time))]
+        [g [transform trans] ((viewExtra model time sw sh) ++ (viewLights model time))]
 
 
 viewExtra : Model -> Time -> Float -> Float -> List (Svg Msg)
 viewExtra model time sw sh =
     [ rect
-        [ x "0"
-        , y "0"
-        , width (toString model.screen.width)
-        , height (toString model.screen.height)
+        [ x "-100"
+        , y "-100"
+        , width "200"
+        , height "200"
         , fill "#eeffee"
         ]
         []
     , text'
-        [ x <| toString <| sw / 2
-        , y <| toString <| sh / 2
-        , fontSize <| toString <| sh / 10
+        [ x "0"
+        , y "0"
+        , fontSize "10"
         , textAnchor "middle"
         ]
         [ text
