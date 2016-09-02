@@ -8422,6 +8422,34 @@ var _elm_lang$svg$Svg_Attributes$accumulate = _elm_lang$virtual_dom$VirtualDom$a
 var _elm_lang$svg$Svg_Attributes$accelerate = _elm_lang$virtual_dom$VirtualDom$attribute('accelerate');
 var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom$attribute('accent-height');
 
+var _elm_lang$svg$Svg_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$svg$Svg_Events$simpleOn = F2(
+	function (name, msg) {
+		return A2(
+			_elm_lang$svg$Svg_Events$on,
+			name,
+			_elm_lang$core$Json_Decode$succeed(msg));
+	});
+var _elm_lang$svg$Svg_Events$onBegin = _elm_lang$svg$Svg_Events$simpleOn('begin');
+var _elm_lang$svg$Svg_Events$onEnd = _elm_lang$svg$Svg_Events$simpleOn('end');
+var _elm_lang$svg$Svg_Events$onRepeat = _elm_lang$svg$Svg_Events$simpleOn('repeat');
+var _elm_lang$svg$Svg_Events$onAbort = _elm_lang$svg$Svg_Events$simpleOn('abort');
+var _elm_lang$svg$Svg_Events$onError = _elm_lang$svg$Svg_Events$simpleOn('error');
+var _elm_lang$svg$Svg_Events$onResize = _elm_lang$svg$Svg_Events$simpleOn('resize');
+var _elm_lang$svg$Svg_Events$onScroll = _elm_lang$svg$Svg_Events$simpleOn('scroll');
+var _elm_lang$svg$Svg_Events$onLoad = _elm_lang$svg$Svg_Events$simpleOn('load');
+var _elm_lang$svg$Svg_Events$onUnload = _elm_lang$svg$Svg_Events$simpleOn('unload');
+var _elm_lang$svg$Svg_Events$onZoom = _elm_lang$svg$Svg_Events$simpleOn('zoom');
+var _elm_lang$svg$Svg_Events$onActivate = _elm_lang$svg$Svg_Events$simpleOn('activate');
+var _elm_lang$svg$Svg_Events$onClick = _elm_lang$svg$Svg_Events$simpleOn('click');
+var _elm_lang$svg$Svg_Events$onFocusIn = _elm_lang$svg$Svg_Events$simpleOn('focusin');
+var _elm_lang$svg$Svg_Events$onFocusOut = _elm_lang$svg$Svg_Events$simpleOn('focusout');
+var _elm_lang$svg$Svg_Events$onMouseDown = _elm_lang$svg$Svg_Events$simpleOn('mousedown');
+var _elm_lang$svg$Svg_Events$onMouseMove = _elm_lang$svg$Svg_Events$simpleOn('mousemove');
+var _elm_lang$svg$Svg_Events$onMouseOut = _elm_lang$svg$Svg_Events$simpleOn('mouseout');
+var _elm_lang$svg$Svg_Events$onMouseOver = _elm_lang$svg$Svg_Events$simpleOn('mouseover');
+var _elm_lang$svg$Svg_Events$onMouseUp = _elm_lang$svg$Svg_Events$simpleOn('mouseup');
+
 var _elm_lang$dom$Native_Dom = function() {
 
 function on(node)
@@ -8739,14 +8767,28 @@ var _andybalaam$sootl$Main$updateResize = F3(
 				screen: {width: w, height: h}
 			});
 	});
+var _andybalaam$sootl$Main$updateMoveBase = F2(
+	function (which, model) {
+		var p = model.player;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				player: _elm_lang$core$Native_Utils.update(
+					p,
+					{position: which})
+			});
+	});
 var _andybalaam$sootl$Main$update = F2(
 	function (msg, model) {
 		var m = function () {
 			var _p0 = msg;
-			if (_p0.ctor === 'Resize') {
-				return A3(_andybalaam$sootl$Main$updateResize, _p0._0, _p0._1, model);
-			} else {
-				return A2(_andybalaam$sootl$Main$updateNewFrame, _p0._0, model);
+			switch (_p0.ctor) {
+				case 'Resize':
+					return A3(_andybalaam$sootl$Main$updateResize, _p0._0, _p0._1, model);
+				case 'NewFrame':
+					return A2(_andybalaam$sootl$Main$updateNewFrame, _p0._0, model);
+				default:
+					return A2(_andybalaam$sootl$Main$updateMoveBase, _p0._0, model);
 			}
 		}();
 		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
@@ -8858,22 +8900,7 @@ var _andybalaam$sootl$Main$playerHappyFace = F2(
 	});
 var _andybalaam$sootl$Main$viewPlayer = F2(
 	function (model, time) {
-		return _elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$svg$Svg$g,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg_Attributes$transform('translate(-40,0)')
-					]),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					A2(_andybalaam$sootl$Main$playerHappyFace, model, time),
-					A6(_andybalaam$sootl$Main$message, time, 0.5, 2.0, 0, -15, 'This is you')))
-			]);
-	});
-var _andybalaam$sootl$Main$viewBase = F4(
-	function (model, time, x, y) {
+		var x = _elm_lang$core$Native_Utils.eq(model.player.position, 0) ? -40 : 40;
 		return _elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -8887,46 +8914,19 @@ var _andybalaam$sootl$Main$viewBase = F4(
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								_elm_lang$core$Basics$toString(x),
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									',',
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(y),
-										')')))))
+								',0)')))
 					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$svg$Svg$circle,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$svg$Svg_Attributes$fill('#005500'),
-								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-								_elm_lang$svg$Svg_Attributes$cx('0'),
-								_elm_lang$svg$Svg_Attributes$cy('0'),
-								_elm_lang$svg$Svg_Attributes$r('9.174984')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[]))
-					]))
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					A2(_andybalaam$sootl$Main$playerHappyFace, model, time),
+					A6(_andybalaam$sootl$Main$message, time, 0.5, 2.0, 0, -15, 'This is you')))
 			]);
 	});
-var _andybalaam$sootl$Main$viewBases = F2(
-	function (model, time) {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			A4(_andybalaam$sootl$Main$viewBase, model, time, -40, 0),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				A4(_andybalaam$sootl$Main$viewBase, model, time, 40, 0),
-				A6(_andybalaam$sootl$Main$message, time, 2.5, 2.0, 40, -15, 'Touch to move here')));
-	});
-var _andybalaam$sootl$Main$slowlyCirclingCircle = function (t) {
-	var rr = (_elm_lang$core$Native_Utils.cmp(t, 5) < 0) ? 80 : ((_elm_lang$core$Native_Utils.cmp(t, 10) < 0) ? (80 - (30 * ((t - 5) / 5))) : 50);
-	var cxx = rr * _elm_lang$core$Basics$sin(t);
-	var cyy = rr * _elm_lang$core$Basics$cos(t);
+var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
+	var t = time - 5;
+	var rr = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 80 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (80 - (30 * ((t - 7) / 5))) : 50);
+	var cxx = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? (300 - ((t + 5) * 60)) : ((0 - rr) * _elm_lang$core$Basics$sin(t));
+	var cyy = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? (-0.7 * 80) : ((-0.7 * rr) * _elm_lang$core$Basics$cos(t));
 	return {
 		hitboxes: _elm_lang$core$Native_List.fromArray(
 			[]),
@@ -8951,8 +8951,8 @@ var _andybalaam$sootl$Main$slowlyCirclingCircle = function (t) {
 				]),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				A6(_andybalaam$sootl$Main$message, t, 4.5, 4.0, cxx, cyy - 25, 'Stay away'),
-				A6(_andybalaam$sootl$Main$message, t, 4.5, 4.0, cxx, cyy + 33, 'from this!')))
+				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy - 25, 'Stay away'),
+				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy + 33, 'from this!')))
 	};
 };
 var _andybalaam$sootl$Main$darkGreyBackground = function (t) {
@@ -8985,7 +8985,8 @@ var _andybalaam$sootl$Main$init = function (flags) {
 			startTime: -1,
 			time: 0,
 			levels: _elm_lang$core$Native_List.fromArray(
-				[_andybalaam$sootl$Main$level0])
+				[_andybalaam$sootl$Main$level0]),
+			player: {position: 0}
 		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
@@ -9040,6 +9041,74 @@ var _andybalaam$sootl$Main$viewLights = F2(
 var _andybalaam$sootl$Main$viewBackgrounds = F2(
 	function (model, time) {
 		return _andybalaam$sootl$Main$firstLevel(model.levels).background(time);
+	});
+var _andybalaam$sootl$Main$Flags = F2(
+	function (a, b) {
+		return {width: a, height: b};
+	});
+var _andybalaam$sootl$Main$Level = F2(
+	function (a, b) {
+		return {background: a, lights: b};
+	});
+var _andybalaam$sootl$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {screen: a, startTime: b, time: c, levels: d, player: e};
+	});
+var _andybalaam$sootl$Main$BaseClicked = function (a) {
+	return {ctor: 'BaseClicked', _0: a};
+};
+var _andybalaam$sootl$Main$viewBase = F5(
+	function (model, time, x, y, which) {
+		return _elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$svg$Svg$g,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$svg$Svg_Attributes$transform(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'translate(',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(x),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									',',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(y),
+										')')))))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$svg$Svg$circle,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$svg$Svg_Attributes$fill('#005500'),
+								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+								_elm_lang$svg$Svg_Attributes$cx('0'),
+								_elm_lang$svg$Svg_Attributes$cy('0'),
+								_elm_lang$svg$Svg_Attributes$r('9.174984'),
+								_elm_lang$svg$Svg_Events$onMouseDown(
+								_andybalaam$sootl$Main$BaseClicked(which))
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					]))
+			]);
+	});
+var _andybalaam$sootl$Main$viewBases = F2(
+	function (model, time) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			A5(_andybalaam$sootl$Main$viewBase, model, time, -40, 0, 0),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A5(_andybalaam$sootl$Main$viewBase, model, time, 40, 0, 1),
+				A6(_andybalaam$sootl$Main$message, time, 2.5, 2.0, 40, -15, 'Touch to move here')));
 	});
 var _andybalaam$sootl$Main$view = function (model) {
 	var sh = model.screen.height - 0;
@@ -9096,18 +9165,6 @@ var _andybalaam$sootl$Main$view = function (model) {
 							A2(_andybalaam$sootl$Main$viewLights, model, time)))))
 			]));
 };
-var _andybalaam$sootl$Main$Flags = F2(
-	function (a, b) {
-		return {width: a, height: b};
-	});
-var _andybalaam$sootl$Main$Level = F2(
-	function (a, b) {
-		return {background: a, lights: b};
-	});
-var _andybalaam$sootl$Main$Model = F4(
-	function (a, b, c, d) {
-		return {screen: a, startTime: b, time: c, levels: d};
-	});
 var _andybalaam$sootl$Main$NewFrame = function (a) {
 	return {ctor: 'NewFrame', _0: a};
 };
