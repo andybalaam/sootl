@@ -24,20 +24,23 @@ hitCircle x y r = Circle x y r
 
 
 type alias Light =
-    Float ->
+    Time ->
         { hitboxes : List HitShape
         , svgs     : List (Svg Msg)
         }
 
 
 type alias Level =
-    { lights : List Light
+    { background : Time -> List (Svg Msg)
+    , lights : List Light
     }
 
 
 emptyLevel : Level
 emptyLevel =
-    { lights =
+    { background =
+        \t -> []
+    , lights =
         [
             \t ->
                 { hitboxes = []
@@ -58,21 +61,50 @@ type alias Model =
     }
 
 
+darkGreyBackground : Time -> List (Svg Msg)
+darkGreyBackground t =
+    [ rect
+        [ x "-300"
+        , y "-300"
+        , width "600"
+        , height "600"
+        , fill "#443333"
+        ]
+        []
+    ]
+
+
+slowlyCirclingCircle : Light
+slowlyCirclingCircle t =
+    let rr =
+            if t < 5       then 80
+            else if t < 10 then 80 - 30 * ((t-5)/5)
+            else                50
+        cxx = rr * sin t
+        cyy = rr * cos t
+    in
+        { hitboxes = []
+        , svgs =
+            [ circle
+                [ cx <| toString cxx
+                , cy <| toString cyy
+                , r "20"
+                , fill "#eeeeff"
+                , opacity "0.7"
+                ]
+                []
+            ]
+            ++ (message t 4.5 4.0 cxx (cyy - 25) "Stay away")
+            ++ (message t 4.5 4.0 cxx (cyy + 33) "from this!")
+        }
+
+
 level0 : Level
 level0 =
-    { lights =
-        [
-            \t ->
-                { hitboxes = []
-                , svgs =
-                    [ circle
-                        [ cx <| toString <| 20 + 10 * t
-                        , cy "20"
-                        , r <| toString <| 10 + 5 * t
-                        ]
-                        []
-                    ]
-                }
+    { background =
+        darkGreyBackground
+    , lights =
+        [ slowlyCirclingCircle
         ]
     }
 
@@ -105,44 +137,133 @@ view model =
         min = if sw < sh then sw else sh
         tx = (sw - min) / 2
         ty = (sh - min) / 2
-        trans = "translate(" ++ (toString tx) ++ "," ++ (toString ty) ++ "),scale(" ++ (toString (min/200)) ++ "),translate(100, 100)"
+        trans = "translate("
+            ++ (toString tx) ++ ","
+            ++ (toString ty) ++ "),scale("
+            ++ (toString (min/200))
+            ++ "),translate(100, 100)"
     in
         svg
         [ width  <| toString sw
         , height <| toString sh
         ]
-        [g [transform trans] ((viewExtra model time sw sh) ++ (viewLights model time))]
+        [ g
+            [
+                transform trans
+            ]
+            (  (viewBackgrounds model time)
+            ++ (viewBases  model time)
+            ++ (viewPlayer model time)
+            ++ (viewLights model time)
+            )
+        ]
 
 
-viewExtra : Model -> Time -> Float -> Float -> List (Svg Msg)
-viewExtra model time sw sh =
-    [ rect
-        [ x "-100"
-        , y "-100"
-        , width "200"
-        , height "200"
-        , fill "#eeffee"
+viewBases model time =
+    (  (viewBase model time -40 0)
+    ++ (viewBase model time  40 0)
+    ++ (message time 2.5 2.0 40 -15 "Touch to move here")
+    )
+
+
+viewBase model time x y =
+    [ g
+        [ transform
+            <| "translate(" ++ (toString x) ++ "," ++ (toString y) ++ ")"
+        ]
+        (
+            [ circle
+                [ fill "#005500"
+                , stroke "#000000"
+                , strokeWidth "1px"
+                , cx "0"
+                , cy "0"
+                , r "9.174984"
+                ]
+                []
+            ]
+        )
+    ]
+
+
+playerHappyFace model time =
+    [ circle
+        [ fill "#00ff00"
+        , stroke "#000000"
+        , strokeWidth "1px"
+        , cx "0"
+        , cy "0"
+        , r "9.174984"
         ]
         []
-    , text'
-        [ x "0"
-        , y "0"
-        , fontSize "10"
-        , textAnchor "middle"
+    , Svg.path
+        [ fill "#000000"
+        , stroke "#000000"
+        , strokeWidth "1px"
+        , d "m -8.8934451,-4.1049 17.5271741,-5e-4 c -1.81995,6.5151 -5.462861,6.9077 -8.641304,2.6902 -3.287813,4.1465 -7.8469406,3.7682 -8.8858701,-2.6897 z"
         ]
-        [ text
-            ((toString model.screen.width)
-            ++ ", "
-            ++ (toString model.screen.height)
-            ++ " at "
-            ++ (toString (round time)))
+        []
+    , Svg.path
+        [ fill "none"
+        , stroke "#000000"
+        , strokeWidth "1px"
+        , d "m -4.5727929,3.7212 c 1.6559109,2.4074 5.7333219,1.5495 8.9673909,1.2228"
         ]
+        []
+    ]
+
+message : Time -> Time -> Time -> Float -> Float -> String -> List (Svg Msg)
+message time tstart tlength xx yy txt =
+    let t = time - tstart in
+        if t < 0 then
+            []
+        else
+            let sz = 1 + t * 0.4
+                op = 1.0 * (tlength - t)
+            in
+                if op < 0 then
+                    []
+                else
+                    [ text'
+                        [ x <| toString xx
+                        , y <| toString yy
+                        , fontSize "8"
+                        , fontFamily "arial,sans-serif"
+                        , textAnchor "middle"
+                        , fontVariant "small-caps"
+                        , fill "#ffffff"
+                        , transform <|
+                            "translate("
+                                ++ (toString (xx * (1 - sz))) ++ ","
+                                ++ (toString (yy * (1 - sz))) ++ ")"
+                            ++ ",scale("
+                                ++ (toString sz) ++ ", "
+                                ++ (toString sz) ++ ")"
+                        , opacity <| toString op
+                        ]
+                        [ text txt ]
+                    ]
+
+
+viewPlayer : Model -> Time -> List (Svg Msg)
+viewPlayer model time =
+    [ g
+        [ transform "translate(-40,0)"
+        ]
+        (  (playerHappyFace model time)
+        ++ (message time 0.5 2.0 0 -15 "This is you")
+        )
     ]
 
 
 viewLights : Model -> Time -> List (Svg Msg)
 viewLights model time =
     ( List.concat <| List.map (\lig -> (lig time).svgs) ( firstLevel model.levels ).lights )
+
+
+viewBackgrounds : Model -> Time -> List (Svg Msg)
+viewBackgrounds model time =
+    ( firstLevel model.levels ).background time
 
 
 firstLevel : List Level -> Level
