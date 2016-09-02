@@ -3,6 +3,7 @@ import Html exposing (Html)
 import Html.App exposing (programWithFlags)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Svg.Events exposing (..)
 import Time exposing(Time)
 import Window
 
@@ -13,7 +14,7 @@ type alias Flags =
     }
 
 
-type Msg = Resize Int Int | NewFrame Time
+type Msg = Resize Int Int | NewFrame Time | BaseClicked Int
 
 
 type HitShape = Circle Float Float Float
@@ -58,6 +59,7 @@ type alias Model =
     , startTime : Time
     , time : Time
     , levels : List Level
+    , player : { position : Int }
     }
 
 
@@ -75,13 +77,14 @@ darkGreyBackground t =
 
 
 slowlyCirclingCircle : Light
-slowlyCirclingCircle t =
-    let rr =
-            if t < 5       then 80
-            else if t < 10 then 80 - 30 * ((t-5)/5)
+slowlyCirclingCircle time =
+    let t = time - 5
+        rr =
+            if t < 7       then 80
+            else if t < 12 then 80 - 30 * ((t-7)/5)
             else                50
-        cxx = rr * sin t
-        cyy = rr * cos t
+        cxx = if t < 0 then 300 - ((t+5) * 60) else -rr * sin t
+        cyy = if t < 0 then -0.7 * 80          else -0.7 * rr * cos t
     in
         { hitboxes = []
         , svgs =
@@ -94,8 +97,8 @@ slowlyCirclingCircle t =
                 ]
                 []
             ]
-            ++ (message t 4.5 4.0 cxx (cyy - 25) "Stay away")
-            ++ (message t 4.5 4.0 cxx (cyy + 33) "from this!")
+            ++ (message time 4.5 4.0 cxx (cyy - 25) "Stay away")
+            ++ (message time 4.5 4.0 cxx (cyy + 33) "from this!")
         }
 
 
@@ -122,6 +125,7 @@ init flags =
             [
                 level0
             ]
+        , player = { position = 0 }
         }
     , Cmd.none
     )
@@ -160,13 +164,13 @@ view model =
 
 
 viewBases model time =
-    (  (viewBase model time -40 0)
-    ++ (viewBase model time  40 0)
+    (  (viewBase model time -40 0 0)
+    ++ (viewBase model time  40 0 1)
     ++ (message time 2.5 2.0 40 -15 "Touch to move here")
     )
 
 
-viewBase model time x y =
+viewBase model time x y which =
     [ g
         [ transform
             <| "translate(" ++ (toString x) ++ "," ++ (toString y) ++ ")"
@@ -179,6 +183,7 @@ viewBase model time x y =
                 , cx "0"
                 , cy "0"
                 , r "9.174984"
+                , onMouseDown (BaseClicked which)
                 ]
                 []
             ]
@@ -247,13 +252,16 @@ message time tstart tlength xx yy txt =
 
 viewPlayer : Model -> Time -> List (Svg Msg)
 viewPlayer model time =
-    [ g
-        [ transform "translate(-40,0)"
+    let x =
+        if model.player.position == 0 then -40 else 40
+    in
+        [ g
+            [ transform <| "translate(" ++ (toString x) ++ ",0)"
+            ]
+            (  (playerHappyFace model time)
+            ++ (message time 0.5 2.0 0 -15 "This is you")
+            )
         ]
-        (  (playerHappyFace model time)
-        ++ (message time 0.5 2.0 0 -15 "This is you")
-        )
-    ]
 
 
 viewLights : Model -> Time -> List (Svg Msg)
@@ -279,9 +287,15 @@ update msg model =
         case msg of
             Resize w h -> updateResize w h model
             NewFrame t -> updateNewFrame t model
+            BaseClicked which -> updateMoveBase which model
     in
         (m, Cmd.none)
 
+updateMoveBase : Int -> Model -> Model
+updateMoveBase which model =
+    let p = model.player
+    in
+        {model | player = {p | position=which}}
 
 updateResize : Int -> Int -> Model -> Model
 updateResize w h model =
