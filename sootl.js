@@ -8862,40 +8862,49 @@ var _andybalaam$sootl$Main$playerHappyFace = F2(
 		return _elm_lang$core$Native_List.fromArray(
 			[
 				A2(
-				_elm_lang$svg$Svg$circle,
+				_elm_lang$svg$Svg$g,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$svg$Svg_Attributes$fill('#00ff00'),
-						_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-						_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-						_elm_lang$svg$Svg_Attributes$cx('0'),
-						_elm_lang$svg$Svg_Attributes$cy('0'),
-						_elm_lang$svg$Svg_Attributes$r('9.174984')
+						_elm_lang$svg$Svg_Attributes$transform('scale(2.1,2.1)')
 					]),
-				_elm_lang$core$Native_List.fromArray(
-					[])),
-				A2(
-				_elm_lang$svg$Svg$path,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$svg$Svg_Attributes$fill('#000000'),
-						_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-						_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-						_elm_lang$svg$Svg_Attributes$d('m -8.8934451,-4.1049 17.5271741,-5e-4 c -1.81995,6.5151 -5.462861,6.9077 -8.641304,2.6902 -3.287813,4.1465 -7.8469406,3.7682 -8.8858701,-2.6897 z')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[])),
-				A2(
-				_elm_lang$svg$Svg$path,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg_Attributes$fill('none'),
-						_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-						_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-						_elm_lang$svg$Svg_Attributes$d('m -4.5727929,3.7212 c 1.6559109,2.4074 5.7333219,1.5495 8.9673909,1.2228')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[]))
+						A2(
+						_elm_lang$svg$Svg$circle,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$svg$Svg_Attributes$fill('#00ff00'),
+								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+								_elm_lang$svg$Svg_Attributes$cx('0'),
+								_elm_lang$svg$Svg_Attributes$cy('0'),
+								_elm_lang$svg$Svg_Attributes$r('9.174984')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						A2(
+						_elm_lang$svg$Svg$path,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$svg$Svg_Attributes$fill('#000000'),
+								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+								_elm_lang$svg$Svg_Attributes$d('m -8.8934451,-4.1049 17.5271741,-5e-4 c -1.81995,6.5151 -5.462861,6.9077 -8.641304,2.6902 -3.287813,4.1465 -7.8469406,3.7682 -8.8858701,-2.6897 z')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						A2(
+						_elm_lang$svg$Svg$path,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$svg$Svg_Attributes$fill('none'),
+								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+								_elm_lang$svg$Svg_Attributes$d('m -4.5727929,3.7212 c 1.6559109,2.4074 5.7333219,1.5495 8.9673909,1.2228')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					]))
 			]);
 	});
 var _andybalaam$sootl$Main$viewPlayer = F2(
@@ -8919,14 +8928,15 @@ var _andybalaam$sootl$Main$viewPlayer = F2(
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					A2(_andybalaam$sootl$Main$playerHappyFace, model, time),
-					A6(_andybalaam$sootl$Main$message, time, 0.5, 2.0, 0, -15, 'This is you')))
+					A6(_andybalaam$sootl$Main$message, time, 0.5, 2.0, 0, -25, 'This is you')))
 			]);
 	});
 var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
 	var t = time - 5;
-	var rr = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 80 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (80 - (30 * ((t - 7) / 5))) : 50);
+	var rr = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 95 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (95 - (45 * ((t - 7) / 5))) : 50);
+	var ry = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 0.7 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (0.7 + (0.3 * ((t - 7) / 5))) : 1);
 	var cxx = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? (300 - ((t + 5) * 60)) : ((0 - rr) * _elm_lang$core$Basics$sin(t));
-	var cyy = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? (-0.7 * 80) : ((-0.7 * rr) * _elm_lang$core$Basics$cos(t));
+	var cyy = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? ((0 - ry) * rr) : (((0 - ry) * rr) * _elm_lang$core$Basics$cos(t));
 	return {
 		hitboxes: _elm_lang$core$Native_List.fromArray(
 			[]),
@@ -8942,7 +8952,7 @@ var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
 							_elm_lang$core$Basics$toString(cxx)),
 							_elm_lang$svg$Svg_Attributes$cy(
 							_elm_lang$core$Basics$toString(cyy)),
-							_elm_lang$svg$Svg_Attributes$r('20'),
+							_elm_lang$svg$Svg_Attributes$r('15'),
 							_elm_lang$svg$Svg_Attributes$fill('#eeeeff'),
 							_elm_lang$svg$Svg_Attributes$opacity('0.7')
 						]),
@@ -8951,8 +8961,8 @@ var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
 				]),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy - 25, 'Stay away'),
-				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy + 33, 'from this!')))
+				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy - 20, 'Stay away'),
+				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy + 27, 'from this!')))
 	};
 };
 var _andybalaam$sootl$Main$darkGreyBackground = function (t) {
@@ -9091,7 +9101,7 @@ var _andybalaam$sootl$Main$viewBase = F5(
 								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
 								_elm_lang$svg$Svg_Attributes$cx('0'),
 								_elm_lang$svg$Svg_Attributes$cy('0'),
-								_elm_lang$svg$Svg_Attributes$r('9.174984'),
+								_elm_lang$svg$Svg_Attributes$r('20'),
 								_elm_lang$svg$Svg_Events$onMouseDown(
 								_andybalaam$sootl$Main$BaseClicked(which))
 							]),
@@ -9108,7 +9118,7 @@ var _andybalaam$sootl$Main$viewBases = F2(
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				A5(_andybalaam$sootl$Main$viewBase, model, time, 40, 0, 1),
-				A6(_andybalaam$sootl$Main$message, time, 2.5, 2.0, 40, -15, 'Touch to move here')));
+				A6(_andybalaam$sootl$Main$message, time, 2.5, 2.0, 40, -25, 'Touch to move here')));
 	});
 var _andybalaam$sootl$Main$view = function (model) {
 	var sh = model.screen.height - 0;
