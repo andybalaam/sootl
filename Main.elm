@@ -50,6 +50,11 @@ emptyLevel =
         ]
     }
 
+levels : List Level
+levels =
+    [ level0
+    ]
+
 
 type alias Model =
     { screen :
@@ -58,7 +63,8 @@ type alias Model =
         }
     , startTime : Time
     , time : Time
-    , levels : List Level
+    , level : Level
+    , levelNum : Int
     , player : { position : Int }
     }
 
@@ -125,10 +131,8 @@ init flags =
             }
         , startTime = -1
         , time = 0
-        , levels =
-            [
-                level0
-            ]
+        , level = level0
+        , levelNum = 0
         , player = { position = 0 }
         }
     , Cmd.none
@@ -273,19 +277,12 @@ viewPlayer model time =
 
 viewLights : Model -> Time -> List (Svg Msg)
 viewLights model time =
-    ( List.concat <| List.map (\lig -> (lig time).svgs) ( firstLevel model.levels ).lights )
+    ( List.concat <| List.map (\lig -> (lig time).svgs) model.level.lights )
 
 
 viewBackgrounds : Model -> Time -> List (Svg Msg)
 viewBackgrounds model time =
-    ( firstLevel model.levels ).background time
-
-
-firstLevel : List Level -> Level
-firstLevel levels =
-    case (List.head levels) of
-        Just lev  -> lev
-        Nothing -> emptyLevel   -- Error - levels should not be empty
+    model.level.background time
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
