@@ -8793,6 +8793,20 @@ var _andybalaam$sootl$Main$update = F2(
 		}();
 		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
 	});
+var _andybalaam$sootl$Main$viewBackgrounds = F2(
+	function (model, time) {
+		return model.level.background(time);
+	});
+var _andybalaam$sootl$Main$viewLights = F2(
+	function (model, time) {
+		return _elm_lang$core$List$concat(
+			A2(
+				_elm_lang$core$List$map,
+				function (lig) {
+					return lig(time).svgs;
+				},
+				model.level.lights));
+	});
 var _andybalaam$sootl$Main$message = F6(
 	function (time, tstart, tlength, xx, yy, txt) {
 		var t = time - tstart;
@@ -8994,13 +9008,15 @@ var _andybalaam$sootl$Main$init = function (flags) {
 			screen: {width: flags.width, height: flags.height},
 			startTime: -1,
 			time: 0,
-			levels: _elm_lang$core$Native_List.fromArray(
-				[_andybalaam$sootl$Main$level0]),
+			level: _andybalaam$sootl$Main$level0,
+			levelNum: 0,
 			player: {position: 0}
 		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
+var _andybalaam$sootl$Main$levels = _elm_lang$core$Native_List.fromArray(
+	[_andybalaam$sootl$Main$level0]);
 var _andybalaam$sootl$Main$emptyLevel = {
 	background: function (t) {
 		return _elm_lang$core$Native_List.fromArray(
@@ -9030,28 +9046,6 @@ var _andybalaam$sootl$Main$emptyLevel = {
 		}
 		])
 };
-var _andybalaam$sootl$Main$firstLevel = function (levels) {
-	var _p1 = _elm_lang$core$List$head(levels);
-	if (_p1.ctor === 'Just') {
-		return _p1._0;
-	} else {
-		return _andybalaam$sootl$Main$emptyLevel;
-	}
-};
-var _andybalaam$sootl$Main$viewLights = F2(
-	function (model, time) {
-		return _elm_lang$core$List$concat(
-			A2(
-				_elm_lang$core$List$map,
-				function (lig) {
-					return lig(time).svgs;
-				},
-				_andybalaam$sootl$Main$firstLevel(model.levels).lights));
-	});
-var _andybalaam$sootl$Main$viewBackgrounds = F2(
-	function (model, time) {
-		return _andybalaam$sootl$Main$firstLevel(model.levels).background(time);
-	});
 var _andybalaam$sootl$Main$Flags = F2(
 	function (a, b) {
 		return {width: a, height: b};
@@ -9060,9 +9054,9 @@ var _andybalaam$sootl$Main$Level = F2(
 	function (a, b) {
 		return {background: a, lights: b};
 	});
-var _andybalaam$sootl$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {screen: a, startTime: b, time: c, levels: d, player: e};
+var _andybalaam$sootl$Main$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {screen: a, startTime: b, time: c, level: d, levelNum: e, player: f};
 	});
 var _andybalaam$sootl$Main$BaseClicked = function (a) {
 	return {ctor: 'BaseClicked', _0: a};
