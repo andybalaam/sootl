@@ -80,25 +80,29 @@ slowlyCirclingCircle : Light
 slowlyCirclingCircle time =
     let t = time - 5
         rr =
-            if t < 7       then 80
-            else if t < 12 then 80 - 30 * ((t-7)/5)
+            if t < 7       then 95
+            else if t < 12 then 95 - 45 * ((t-7)/5)
             else                50
+        ry =
+            if t < 7 then 0.7
+            else if t < 12 then 0.7 + 0.3 * ((t-7)/5)
+            else 1
         cxx = if t < 0 then 300 - ((t+5) * 60) else -rr * sin t
-        cyy = if t < 0 then -0.7 * 80          else -0.7 * rr * cos t
+        cyy = if t < 0 then -ry * rr           else -ry * rr * cos t
     in
         { hitboxes = []
         , svgs =
             [ circle
                 [ cx <| toString cxx
                 , cy <| toString cyy
-                , r "20"
+                , r "15"
                 , fill "#eeeeff"
                 , opacity "0.7"
                 ]
                 []
             ]
-            ++ (message time 4.5 4.0 cxx (cyy - 25) "Stay away")
-            ++ (message time 4.5 4.0 cxx (cyy + 33) "from this!")
+            ++ (message time 4.5 4.0 cxx (cyy - 20) "Stay away")
+            ++ (message time 4.5 4.0 cxx (cyy + 27) "from this!")
         }
 
 
@@ -166,7 +170,7 @@ view model =
 viewBases model time =
     (  (viewBase model time -40 0 0)
     ++ (viewBase model time  40 0 1)
-    ++ (message time 2.5 2.0 40 -15 "Touch to move here")
+    ++ (message time 2.5 2.0 40 -25 "Touch to move here")
     )
 
 
@@ -182,7 +186,7 @@ viewBase model time x y which =
                 , strokeWidth "1px"
                 , cx "0"
                 , cy "0"
-                , r "9.174984"
+                , r "20"
                 , onMouseDown (BaseClicked which)
                 ]
                 []
@@ -192,29 +196,32 @@ viewBase model time x y which =
 
 
 playerHappyFace model time =
-    [ circle
-        [ fill "#00ff00"
-        , stroke "#000000"
-        , strokeWidth "1px"
-        , cx "0"
-        , cy "0"
-        , r "9.174984"
+    [ g
+        [ transform "scale(2.1,2.1)" ]
+        [ circle
+            [ fill "#00ff00"
+            , stroke "#000000"
+            , strokeWidth "1px"
+            , cx "0"
+            , cy "0"
+            , r "9.174984"
+            ]
+            []
+        , Svg.path
+            [ fill "#000000"
+            , stroke "#000000"
+            , strokeWidth "1px"
+            , d "m -8.8934451,-4.1049 17.5271741,-5e-4 c -1.81995,6.5151 -5.462861,6.9077 -8.641304,2.6902 -3.287813,4.1465 -7.8469406,3.7682 -8.8858701,-2.6897 z"
+            ]
+            []
+        , Svg.path
+            [ fill "none"
+            , stroke "#000000"
+            , strokeWidth "1px"
+            , d "m -4.5727929,3.7212 c 1.6559109,2.4074 5.7333219,1.5495 8.9673909,1.2228"
+            ]
+            []
         ]
-        []
-    , Svg.path
-        [ fill "#000000"
-        , stroke "#000000"
-        , strokeWidth "1px"
-        , d "m -8.8934451,-4.1049 17.5271741,-5e-4 c -1.81995,6.5151 -5.462861,6.9077 -8.641304,2.6902 -3.287813,4.1465 -7.8469406,3.7682 -8.8858701,-2.6897 z"
-        ]
-        []
-    , Svg.path
-        [ fill "none"
-        , stroke "#000000"
-        , strokeWidth "1px"
-        , d "m -4.5727929,3.7212 c 1.6559109,2.4074 5.7333219,1.5495 8.9673909,1.2228"
-        ]
-        []
     ]
 
 message : Time -> Time -> Time -> Float -> Float -> String -> List (Svg Msg)
@@ -259,7 +266,7 @@ viewPlayer model time =
             [ transform <| "translate(" ++ (toString x) ++ ",0)"
             ]
             (  (playerHappyFace model time)
-            ++ (message time 0.5 2.0 0 -15 "This is you")
+            ++ (message time 0.5 2.0 0 -25 "This is you")
             )
         ]
 
