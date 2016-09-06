@@ -20,10 +20,6 @@ type Msg = Resize Int Int | NewFrame Time | BaseClicked Int
 type HitShape = Circle Float Float Float
 
 
-hitCircle : Float -> Float -> Float -> HitShape
-hitCircle x y r = Circle x y r
-
-
 type alias Light =
     Time ->
         { hitboxes : List HitShape
@@ -34,6 +30,7 @@ type alias Light =
 type alias Level =
     { background : Time -> List (Svg Msg)
     , lights : List Light
+    , bases : List HitShape
     }
 
 
@@ -106,6 +103,10 @@ level0 =
     , lights =
         [ slowlyCirclingCircle
         ]
+    , bases =
+        [ Circle -40 0 20
+        , Circle  40 0 20
+        ]
     }
 
 
@@ -124,7 +125,6 @@ init flags =
         }
     , Cmd.none
     )
-
 
 
 view : Model -> Html Msg
@@ -158,11 +158,11 @@ view model =
         ]
 
 
+viewBases : Model -> Time -> List (Svg Msg)
 viewBases model time =
-    (  (viewBase model time -40 0 0)
-    ++ (viewBase model time  40 0 1)
-    ++ (message time 2.5 2.0 40 -25 "Touch to move here")
-    )
+    (
+        List.concat <| List.indexedMap (viewBase model time) model.level.bases )
+            ++ (message time 2.5 2.0 40 -25 "Touch to move here")
 
 
 dist : Float -> Float -> Float -> Float -> Float
@@ -174,52 +174,47 @@ dist x1 y1 x2 y2 =
         sqrt (dx*dx + dy*dy)
 
 
-circleIntersectsHitShape : Float -> Float -> Float -> HitShape -> Bool
-circleIntersectsHitShape x y r shape =
-    case shape of
-        Circle hx hy hr -> (dist x y hx hy) < (r + hr)
+intersect : HitShape -> HitShape -> Bool
+intersect s1 s2 =
+    case s1 of
+        Circle x1 y1 r1 ->
+            case s2 of
+                Circle x2 y2 r2 -> (dist x1 y1 x2 y2) < (r1 + r2)
 
 
-circleIntersectsLight : Time -> Float -> Float -> Float -> Light -> Bool
-circleIntersectsLight time x y r light =
-    List.any (circleIntersectsHitShape x y r) (light time).hitboxes
+isLit : Model -> Time -> HitShape -> Bool
+isLit model time shape =
+    let intersectsLight time shape light =
+        List.any (intersect shape) (light time).hitboxes
+    in
+        List.any (intersectsLight time shape) model.level.lights
 
 
-circleIsLit : Model -> Time -> Float -> Float -> Float -> Bool
-circleIsLit model time x y r =
-    List.any (circleIntersectsLight time x y r) model.level.lights
-
-
-viewBase : Model -> Time -> Float -> Float -> Int -> List (Svg Msg)
-viewBase model time x y which =
+viewBase : Model -> Time -> Int -> HitShape -> List (Svg Msg)
+viewBase model time which baseShape =
     let
-        rad = 20
         f =
-            if (circleIsLit model time x y rad) then
+            if (isLit model time baseShape) then
                 "#550000"
             else
                 "#005500"
     in
-    [ g
-        [ transform
-            <| "translate(" ++ (toString x) ++ "," ++ (toString y) ++ ")"
-        ]
-        (
-            [ circle
-                [ fill f
-                , stroke "#000000"
-                , strokeWidth "1px"
-                , cx "0"
-                , cy "0"
-                , r (toString rad)
-                , onMouseDown (BaseClicked which)
+        case baseShape of
+            Circle x y rad ->
+                [ circle
+                    [ fill f
+                    , stroke "#000000"
+                    , strokeWidth "1px"
+                    , cx <| toString x
+                    , cy <| toString y
+                    , r  <| toString rad
+                    , onMouseDown (BaseClicked which)
+                    ]
+                    []
                 ]
-                []
-            ]
-        )
-    ]
 
 
+playerHappyFace : Model -> Time -> List (Svg Msg)
 playerHappyFace model time =
     [ g
         [ transform "scale(2.1,2.1)" ]
@@ -248,6 +243,7 @@ playerHappyFace model time =
             []
         ]
     ]
+
 
 message : Time -> Time -> Time -> Float -> Float -> String -> List (Svg Msg)
 message time tstart tlength xx yy txt =
@@ -316,11 +312,13 @@ update msg model =
     in
         (m, Cmd.none)
 
+
 updateMoveBase : Int -> Model -> Model
 updateMoveBase which model =
     let p = model.player
     in
         {model | player = {p | position=which}}
+
 
 updateResize : Int -> Int -> Model -> Model
 updateResize w h model =
