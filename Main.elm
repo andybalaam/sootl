@@ -37,19 +37,6 @@ type alias Level =
     }
 
 
-emptyLevel : Level
-emptyLevel =
-    { background =
-        \t -> []
-    , lights =
-        [
-            \t ->
-                { hitboxes = []
-                , svgs = [text' [ x "20", y "20" ] [ text "Missing Level!" ] ]
-                }
-        ]
-    }
-
 levels : List Level
 levels =
     [ level0
@@ -96,7 +83,7 @@ slowlyCirclingCircle time =
         cxx = if t < 0 then 300 - ((t+5) * 60) else -rr * sin t
         cyy = if t < 0 then -ry * rr           else -ry * rr * cos t
     in
-        { hitboxes = []
+        { hitboxes = [ Circle cxx cyy 15 ]
         , svgs =
             [ circle
                 [ cx <| toString cxx
@@ -178,19 +165,53 @@ viewBases model time =
     )
 
 
+dist : Float -> Float -> Float -> Float -> Float
+dist x1 y1 x2 y2 =
+    let
+        dx = x1 - x2
+        dy = y1 - y2
+    in
+        sqrt (dx*dx + dy*dy)
+
+
+circleIntersectsHitShape : Float -> Float -> Float -> HitShape -> Bool
+circleIntersectsHitShape x y r shape =
+    case shape of
+        Circle hx hy hr -> (dist x y hx hy) < (r + hr)
+
+
+circleIntersectsLight : Time -> Float -> Float -> Float -> Light -> Bool
+circleIntersectsLight time x y r light =
+    List.any (circleIntersectsHitShape x y r) (light time).hitboxes
+
+
+circleIsLit : Model -> Time -> Float -> Float -> Float -> Bool
+circleIsLit model time x y r =
+    List.any (circleIntersectsLight time x y r) model.level.lights
+
+
+viewBase : Model -> Time -> Float -> Float -> Int -> List (Svg Msg)
 viewBase model time x y which =
+    let
+        rad = 20
+        f =
+            if (circleIsLit model time x y rad) then
+                "#550000"
+            else
+                "#005500"
+    in
     [ g
         [ transform
             <| "translate(" ++ (toString x) ++ "," ++ (toString y) ++ ")"
         ]
         (
             [ circle
-                [ fill "#005500"
+                [ fill f
                 , stroke "#000000"
                 , strokeWidth "1px"
                 , cx "0"
                 , cy "0"
-                , r "20"
+                , r (toString rad)
                 , onMouseDown (BaseClicked which)
                 ]
                 []
