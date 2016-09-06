@@ -8945,40 +8945,33 @@ var _andybalaam$sootl$Main$viewPlayer = F2(
 					A6(_andybalaam$sootl$Main$message, time, 0.5, 2.0, 0, -25, 'This is you')))
 			]);
 	});
-var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
-	var t = time - 5;
-	var rr = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 95 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (95 - (45 * ((t - 7) / 5))) : 50);
-	var ry = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 0.7 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (0.7 + (0.3 * ((t - 7) / 5))) : 1);
-	var cxx = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? (300 - ((t + 5) * 60)) : ((0 - rr) * _elm_lang$core$Basics$sin(t));
-	var cyy = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? ((0 - ry) * rr) : (((0 - ry) * rr) * _elm_lang$core$Basics$cos(t));
-	return {
-		hitboxes: _elm_lang$core$Native_List.fromArray(
-			[]),
-		svgs: A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(
-					_elm_lang$svg$Svg$circle,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$svg$Svg_Attributes$cx(
-							_elm_lang$core$Basics$toString(cxx)),
-							_elm_lang$svg$Svg_Attributes$cy(
-							_elm_lang$core$Basics$toString(cyy)),
-							_elm_lang$svg$Svg_Attributes$r('15'),
-							_elm_lang$svg$Svg_Attributes$fill('#eeeeff'),
-							_elm_lang$svg$Svg_Attributes$opacity('0.7')
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[]))
-				]),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy - 20, 'Stay away'),
-				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy + 27, 'from this!')))
-	};
-};
+var _andybalaam$sootl$Main$dist = F4(
+	function (x1, y1, x2, y2) {
+		var dy = y1 - y2;
+		var dx = x1 - x2;
+		return _elm_lang$core$Basics$sqrt((dx * dx) + (dy * dy));
+	});
+var _andybalaam$sootl$Main$circleIntersectsHitShape = F4(
+	function (x, y, r, shape) {
+		var _p1 = shape;
+		return _elm_lang$core$Native_Utils.cmp(
+			A4(_andybalaam$sootl$Main$dist, x, y, _p1._0, _p1._1),
+			r + _p1._2) < 0;
+	});
+var _andybalaam$sootl$Main$circleIntersectsLight = F5(
+	function (time, x, y, r, light) {
+		return A2(
+			_elm_lang$core$List$any,
+			A3(_andybalaam$sootl$Main$circleIntersectsHitShape, x, y, r),
+			light(time).hitboxes);
+	});
+var _andybalaam$sootl$Main$circleIsLit = F5(
+	function (model, time, x, y, r) {
+		return A2(
+			_elm_lang$core$List$any,
+			A4(_andybalaam$sootl$Main$circleIntersectsLight, time, x, y, r),
+			model.level.lights);
+	});
 var _andybalaam$sootl$Main$darkGreyBackground = function (t) {
 	return _elm_lang$core$Native_List.fromArray(
 		[
@@ -8995,56 +8988,6 @@ var _andybalaam$sootl$Main$darkGreyBackground = function (t) {
 			_elm_lang$core$Native_List.fromArray(
 				[]))
 		]);
-};
-var _andybalaam$sootl$Main$level0 = {
-	background: _andybalaam$sootl$Main$darkGreyBackground,
-	lights: _elm_lang$core$Native_List.fromArray(
-		[_andybalaam$sootl$Main$slowlyCirclingCircle])
-};
-var _andybalaam$sootl$Main$init = function (flags) {
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			screen: {width: flags.width, height: flags.height},
-			startTime: -1,
-			time: 0,
-			level: _andybalaam$sootl$Main$level0,
-			levelNum: 0,
-			player: {position: 0}
-		},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
-var _andybalaam$sootl$Main$levels = _elm_lang$core$Native_List.fromArray(
-	[_andybalaam$sootl$Main$level0]);
-var _andybalaam$sootl$Main$emptyLevel = {
-	background: function (t) {
-		return _elm_lang$core$Native_List.fromArray(
-			[]);
-	},
-	lights: _elm_lang$core$Native_List.fromArray(
-		[
-			function (t) {
-			return {
-				hitboxes: _elm_lang$core$Native_List.fromArray(
-					[]),
-				svgs: _elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$svg$Svg$text$,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$svg$Svg_Attributes$x('20'),
-								_elm_lang$svg$Svg_Attributes$y('20')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$svg$Svg$text('Missing Level!')
-							]))
-					])
-			};
-		}
-		])
 };
 var _andybalaam$sootl$Main$Flags = F2(
 	function (a, b) {
@@ -9063,6 +9006,8 @@ var _andybalaam$sootl$Main$BaseClicked = function (a) {
 };
 var _andybalaam$sootl$Main$viewBase = F5(
 	function (model, time, x, y, which) {
+		var rad = 20;
+		var f = A5(_andybalaam$sootl$Main$circleIsLit, model, time, x, y, rad) ? '#550000' : '#005500';
 		return _elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -9090,12 +9035,13 @@ var _andybalaam$sootl$Main$viewBase = F5(
 						_elm_lang$svg$Svg$circle,
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$svg$Svg_Attributes$fill('#005500'),
+								_elm_lang$svg$Svg_Attributes$fill(f),
 								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
 								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
 								_elm_lang$svg$Svg_Attributes$cx('0'),
 								_elm_lang$svg$Svg_Attributes$cy('0'),
-								_elm_lang$svg$Svg_Attributes$r('20'),
+								_elm_lang$svg$Svg_Attributes$r(
+								_elm_lang$core$Basics$toString(rad)),
 								_elm_lang$svg$Svg_Events$onMouseDown(
 								_andybalaam$sootl$Main$BaseClicked(which))
 							]),
@@ -9190,6 +9136,71 @@ var _andybalaam$sootl$Main$subscriptions = function (model) {
 				})
 			]));
 };
+var _andybalaam$sootl$Main$Circle = F3(
+	function (a, b, c) {
+		return {ctor: 'Circle', _0: a, _1: b, _2: c};
+	});
+var _andybalaam$sootl$Main$hitCircle = F3(
+	function (x, y, r) {
+		return A3(_andybalaam$sootl$Main$Circle, x, y, r);
+	});
+var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
+	var t = time - 5;
+	var rr = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 95 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (95 - (45 * ((t - 7) / 5))) : 50);
+	var ry = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 0.7 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (0.7 + (0.3 * ((t - 7) / 5))) : 1);
+	var cxx = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? (300 - ((t + 5) * 60)) : ((0 - rr) * _elm_lang$core$Basics$sin(t));
+	var cyy = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? ((0 - ry) * rr) : (((0 - ry) * rr) * _elm_lang$core$Basics$cos(t));
+	return {
+		hitboxes: _elm_lang$core$Native_List.fromArray(
+			[
+				A3(_andybalaam$sootl$Main$Circle, cxx, cyy, 15)
+			]),
+		svgs: A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$svg$Svg$circle,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$svg$Svg_Attributes$cx(
+							_elm_lang$core$Basics$toString(cxx)),
+							_elm_lang$svg$Svg_Attributes$cy(
+							_elm_lang$core$Basics$toString(cyy)),
+							_elm_lang$svg$Svg_Attributes$r('15'),
+							_elm_lang$svg$Svg_Attributes$fill('#eeeeff'),
+							_elm_lang$svg$Svg_Attributes$opacity('0.7')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[]))
+				]),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy - 20, 'Stay away'),
+				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy + 27, 'from this!')))
+	};
+};
+var _andybalaam$sootl$Main$level0 = {
+	background: _andybalaam$sootl$Main$darkGreyBackground,
+	lights: _elm_lang$core$Native_List.fromArray(
+		[_andybalaam$sootl$Main$slowlyCirclingCircle])
+};
+var _andybalaam$sootl$Main$levels = _elm_lang$core$Native_List.fromArray(
+	[_andybalaam$sootl$Main$level0]);
+var _andybalaam$sootl$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			screen: {width: flags.width, height: flags.height},
+			startTime: -1,
+			time: 0,
+			level: _andybalaam$sootl$Main$level0,
+			levelNum: 0,
+			player: {position: 0}
+		},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
 var _andybalaam$sootl$Main$main = {
 	main: _elm_lang$html$Html_App$programWithFlags(
 		{init: _andybalaam$sootl$Main$init, view: _andybalaam$sootl$Main$view, update: _andybalaam$sootl$Main$update, subscriptions: _andybalaam$sootl$Main$subscriptions}),
@@ -9206,14 +9217,6 @@ var _andybalaam$sootl$Main$main = {
 				});
 		})
 };
-var _andybalaam$sootl$Main$Circle = F3(
-	function (a, b, c) {
-		return {ctor: 'Circle', _0: a, _1: b, _2: c};
-	});
-var _andybalaam$sootl$Main$hitCircle = F3(
-	function (x, y, r) {
-		return A3(_andybalaam$sootl$Main$Circle, x, y, r);
-	});
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
