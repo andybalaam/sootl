@@ -50,6 +50,7 @@ type alias Model =
     , levelNum : Int
     , player :
         { position : Int
+        , alive : Bool
         }
     }
 
@@ -141,7 +142,10 @@ init flags =
         , time = 0
         , level = level0
         , levelNum = 0
-        , player = { position = 0 }
+        , player =
+            { position = 0
+            , alive = True
+            }
         }
     , Cmd.none
     )
@@ -238,6 +242,41 @@ viewBase model time which baseShape =
                 ]
 
 
+playerSadFace : Model -> LevelTime -> List (Svg Msg)
+playerSadFace model time =
+    [ g
+        [ transform "scale(2.1,2.1)" ]
+        (
+            [ circle
+                [ fill "#ff3100"
+                , stroke "#000000"
+                , strokeWidth "1px"
+                , cx "0"
+                , cy "0"
+                , r "9.174984"
+                ]
+                []
+            , Svg.path
+                [ fill "#000000"
+                , stroke "#000000"
+                , strokeWidth "1px"
+                , d "m -7.7,-5.7 16.7303048,5.2248 c -0.459938,0.7095 -0.918545,1.3192 -1.372437,1.8333 -0.453892,0.5141 -0.960714,0.097 -1.401791,0.4236 l -0.920862,0.4509 -0.67903,-2.5808 -1.252743,1.3298 -0.88384,-1.5369 -1.359301,1.4435 -1.180369,-1.3734 c -4.3744806,2.9777 -8.6135091,1.2574 -7.6799318,-5.2165 z"
+                ]
+                []
+            , Svg.path
+                [ fill "none"
+                , stroke "#000000"
+                , strokeWidth "1px"
+                , d "m -4.5727929,4.2212 c 6.5205429,-1.4331 9.0681149,-1.0832 8.9673909,1.2228"
+                ]
+                []
+            ]
+        ++ (message time time (LevelTime 1.0) 0 -12 "Bad luck")
+        ++ (message time time (LevelTime 1.0) 0  16 "You were seen!")
+        )
+    ]
+
+
 playerHappyFace : Model -> LevelTime -> List (Svg Msg)
 playerHappyFace model time =
     [ g
@@ -306,13 +345,14 @@ message time tstart tlength xx yy txt =
 
 viewPlayer : Model -> LevelTime -> List (Svg Msg)
 viewPlayer model time =
-    let x =
-        if model.player.position == 0 then -40 else 40
+    let
+        x = if model.player.position == 0 then -40 else 40
+        render = if model.player.alive then playerHappyFace else playerSadFace
     in
         [ g
             [ transform <| "translate(" ++ (toString x) ++ ",0)"
             ]
-            ( (playerHappyFace model time)
+            (  (render model time)
             ++
             (message time (LevelTime 0.5) (LevelTime 2.0) 0 -25 "This is you")
             )
@@ -352,12 +392,35 @@ updateResize w h model =
     {model | screen = {width = w, height = h}}
 
 
+getItem : Int -> List a -> Maybe a
+getItem n xs =
+    List.head <| List.drop (n-1) xs
+
+
+noShape : HitShape
+noShape =
+    Circle 0 0 0
+
+
 updateNewFrame : Time -> Model -> Model
 updateNewFrame t model =
-    { model
-        | time = t
-        , startTime = if model.startTime == -1 then t else model.startTime
-    }
+    let
+        pl = model.player
+        st = if model.startTime == -1 then t else model.startTime
+        baseShape =
+            Maybe.withDefault noShape <|
+                getItem model.player.position model.level.bases
+    in
+        { model
+            | time = t
+            , startTime = st
+            , player =
+                { pl
+                    | alive =
+                        pl.alive
+                        && not (isLit model (levelTime model) baseShape)
+                }
+        }
 
 
 subscriptions : Model -> Sub Msg
