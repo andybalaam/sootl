@@ -7,6 +7,18 @@ One day it might be a game where you have to avoid the lights.
 For now it might be helpful as an example of how to build an SVG that resizes
 when the screen changes, in Elm.
 
+## Build
+
+    sudo apt-get install nodejs-legacy npm
+    sudo npm install -g elm
+
+    git clone https://github.com/andybalaam/sootl.git
+    cid sootl
+
+    make setup
+    make run
+    sensible-browser http://localhost:8000/index.html
+
 ## License
 
 Sootl is Copyright (C) 2016 Andy Balaam.
