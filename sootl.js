@@ -8807,14 +8807,113 @@ var _andybalaam$sootl$Main$viewLights = F2(
 				},
 				model.level.lights));
 	});
+var _andybalaam$sootl$Main$playerHappyFace = F2(
+	function (model, time) {
+		return _elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$svg$Svg$g,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$svg$Svg_Attributes$transform('scale(2.1,2.1)')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$svg$Svg$circle,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$svg$Svg_Attributes$fill('#00ff00'),
+								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+								_elm_lang$svg$Svg_Attributes$cx('0'),
+								_elm_lang$svg$Svg_Attributes$cy('0'),
+								_elm_lang$svg$Svg_Attributes$r('9.174984')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						A2(
+						_elm_lang$svg$Svg$path,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$svg$Svg_Attributes$fill('#000000'),
+								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+								_elm_lang$svg$Svg_Attributes$d('m -8.8934451,-4.1049 17.5271741,-5e-4 c -1.81995,6.5151 -5.462861,6.9077 -8.641304,2.6902 -3.287813,4.1465 -7.8469406,3.7682 -8.8858701,-2.6897 z')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						A2(
+						_elm_lang$svg$Svg$path,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$svg$Svg_Attributes$fill('none'),
+								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+								_elm_lang$svg$Svg_Attributes$d('m -4.5727929,3.7212 c 1.6559109,2.4074 5.7333219,1.5495 8.9673909,1.2228')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					]))
+			]);
+	});
+var _andybalaam$sootl$Main$dist = F4(
+	function (x1, y1, x2, y2) {
+		var dy = y1 - y2;
+		var dx = x1 - x2;
+		return _elm_lang$core$Basics$sqrt((dx * dx) + (dy * dy));
+	});
+var _andybalaam$sootl$Main$intersect = F2(
+	function (s1, s2) {
+		var _p1 = s1;
+		var _p2 = s2;
+		return _elm_lang$core$Native_Utils.cmp(
+			A4(_andybalaam$sootl$Main$dist, _p1._0, _p1._1, _p2._0, _p2._1),
+			_p1._2 + _p2._2) < 0;
+	});
+var _andybalaam$sootl$Main$isLit = F3(
+	function (model, time, shape) {
+		var intersectsLight = F3(
+			function (time, shape, light) {
+				return A2(
+					_elm_lang$core$List$any,
+					_andybalaam$sootl$Main$intersect(shape),
+					light(time).hitboxes);
+			});
+		return A2(
+			_elm_lang$core$List$any,
+			A2(intersectsLight, time, shape),
+			model.level.lights);
+	});
+var _andybalaam$sootl$Main$darkGreyBackground = function (t) {
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$rect,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$x('-300'),
+					_elm_lang$svg$Svg_Attributes$y('-300'),
+					_elm_lang$svg$Svg_Attributes$width('600'),
+					_elm_lang$svg$Svg_Attributes$height('600'),
+					_elm_lang$svg$Svg_Attributes$fill('#443333')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]);
+};
+var _andybalaam$sootl$Main$secs = function (t) {
+	var _p3 = t;
+	return _p3._0;
+};
 var _andybalaam$sootl$Main$message = F6(
 	function (time, tstart, tlength, xx, yy, txt) {
-		var t = time - tstart;
+		var t = _andybalaam$sootl$Main$secs(time) - _andybalaam$sootl$Main$secs(tstart);
 		if (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) {
 			return _elm_lang$core$Native_List.fromArray(
 				[]);
 		} else {
-			var op = 1.0 * (tlength - t);
+			var op = 1.0 * (_andybalaam$sootl$Main$secs(tlength) - t);
 			var sz = 1 + (t * 0.4);
 			return (_elm_lang$core$Native_Utils.cmp(op, 0) < 0) ? _elm_lang$core$Native_List.fromArray(
 				[]) : _elm_lang$core$Native_List.fromArray(
@@ -8871,128 +8970,13 @@ var _andybalaam$sootl$Main$message = F6(
 				]);
 		}
 	});
-var _andybalaam$sootl$Main$playerHappyFace = F2(
-	function (model, time) {
-		return _elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$svg$Svg$g,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg_Attributes$transform('scale(2.1,2.1)')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$svg$Svg$circle,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$svg$Svg_Attributes$fill('#00ff00'),
-								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-								_elm_lang$svg$Svg_Attributes$cx('0'),
-								_elm_lang$svg$Svg_Attributes$cy('0'),
-								_elm_lang$svg$Svg_Attributes$r('9.174984')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[])),
-						A2(
-						_elm_lang$svg$Svg$path,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$svg$Svg_Attributes$fill('#000000'),
-								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-								_elm_lang$svg$Svg_Attributes$d('m -8.8934451,-4.1049 17.5271741,-5e-4 c -1.81995,6.5151 -5.462861,6.9077 -8.641304,2.6902 -3.287813,4.1465 -7.8469406,3.7682 -8.8858701,-2.6897 z')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[])),
-						A2(
-						_elm_lang$svg$Svg$path,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$svg$Svg_Attributes$fill('none'),
-								_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-								_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-								_elm_lang$svg$Svg_Attributes$d('m -4.5727929,3.7212 c 1.6559109,2.4074 5.7333219,1.5495 8.9673909,1.2228')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[]))
-					]))
-			]);
-	});
-var _andybalaam$sootl$Main$viewPlayer = F2(
-	function (model, time) {
-		var x = _elm_lang$core$Native_Utils.eq(model.player.position, 0) ? -40 : 40;
-		return _elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$svg$Svg$g,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg_Attributes$transform(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'translate(',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(x),
-								',0)')))
-					]),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					A2(_andybalaam$sootl$Main$playerHappyFace, model, time),
-					A6(_andybalaam$sootl$Main$message, time, 0.5, 2.0, 0, -25, 'This is you')))
-			]);
-	});
-var _andybalaam$sootl$Main$dist = F4(
-	function (x1, y1, x2, y2) {
-		var dy = y1 - y2;
-		var dx = x1 - x2;
-		return _elm_lang$core$Basics$sqrt((dx * dx) + (dy * dy));
-	});
-var _andybalaam$sootl$Main$intersect = F2(
-	function (s1, s2) {
-		var _p1 = s1;
-		var _p2 = s2;
-		return _elm_lang$core$Native_Utils.cmp(
-			A4(_andybalaam$sootl$Main$dist, _p1._0, _p1._1, _p2._0, _p2._1),
-			_p1._2 + _p2._2) < 0;
-	});
-var _andybalaam$sootl$Main$isLit = F3(
-	function (model, time, shape) {
-		var intersectsLight = F3(
-			function (time, shape, light) {
-				return A2(
-					_elm_lang$core$List$any,
-					_andybalaam$sootl$Main$intersect(shape),
-					light(time).hitboxes);
-			});
-		return A2(
-			_elm_lang$core$List$any,
-			A2(intersectsLight, time, shape),
-			model.level.lights);
-	});
-var _andybalaam$sootl$Main$darkGreyBackground = function (t) {
-	return _elm_lang$core$Native_List.fromArray(
-		[
-			A2(
-			_elm_lang$svg$Svg$rect,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$svg$Svg_Attributes$x('-300'),
-					_elm_lang$svg$Svg_Attributes$y('-300'),
-					_elm_lang$svg$Svg_Attributes$width('600'),
-					_elm_lang$svg$Svg_Attributes$height('600'),
-					_elm_lang$svg$Svg_Attributes$fill('#443333')
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[]))
-		]);
-};
 var _andybalaam$sootl$Main$Flags = F2(
 	function (a, b) {
 		return {width: a, height: b};
+	});
+var _andybalaam$sootl$Main$Light = F2(
+	function (a, b) {
+		return {hitboxes: a, svgs: b};
 	});
 var _andybalaam$sootl$Main$Level = F3(
 	function (a, b, c) {
@@ -9008,7 +8992,7 @@ var _andybalaam$sootl$Main$BaseClicked = function (a) {
 var _andybalaam$sootl$Main$viewBase = F4(
 	function (model, time, which, baseShape) {
 		var f = A3(_andybalaam$sootl$Main$isLit, model, time, baseShape) ? '#550000' : '#005500';
-		var _p3 = baseShape;
+		var _p4 = baseShape;
 		return _elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -9019,11 +9003,11 @@ var _andybalaam$sootl$Main$viewBase = F4(
 						_elm_lang$svg$Svg_Attributes$stroke('#000000'),
 						_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
 						_elm_lang$svg$Svg_Attributes$cx(
-						_elm_lang$core$Basics$toString(_p3._0)),
+						_elm_lang$core$Basics$toString(_p4._0)),
 						_elm_lang$svg$Svg_Attributes$cy(
-						_elm_lang$core$Basics$toString(_p3._1)),
+						_elm_lang$core$Basics$toString(_p4._1)),
 						_elm_lang$svg$Svg_Attributes$r(
-						_elm_lang$core$Basics$toString(_p3._2)),
+						_elm_lang$core$Basics$toString(_p4._2)),
 						_elm_lang$svg$Svg_Events$onMouseDown(
 						_andybalaam$sootl$Main$BaseClicked(which))
 					]),
@@ -9031,72 +9015,6 @@ var _andybalaam$sootl$Main$viewBase = F4(
 					[]))
 			]);
 	});
-var _andybalaam$sootl$Main$viewBases = F2(
-	function (model, time) {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$List$concat(
-				A2(
-					_elm_lang$core$List$indexedMap,
-					A2(_andybalaam$sootl$Main$viewBase, model, time),
-					model.level.bases)),
-			A6(_andybalaam$sootl$Main$message, time, 2.5, 2.0, 40, -25, 'Touch to move here'));
-	});
-var _andybalaam$sootl$Main$view = function (model) {
-	var sh = model.screen.height - 0;
-	var sw = model.screen.width - 0;
-	var min = (_elm_lang$core$Native_Utils.cmp(sw, sh) < 0) ? sw : sh;
-	var ty = (sh - min) / 2;
-	var tx = (sw - min) / 2;
-	var trans = A2(
-		_elm_lang$core$Basics_ops['++'],
-		'translate(',
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Basics$toString(tx),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				',',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(ty),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'),scale(',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(min / 200),
-							'),translate(100, 100)'))))));
-	var time = (model.time - model.startTime) / 1000;
-	return A2(
-		_elm_lang$svg$Svg$svg,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$svg$Svg_Attributes$width(
-				_elm_lang$core$Basics$toString(sw)),
-				_elm_lang$svg$Svg_Attributes$height(
-				_elm_lang$core$Basics$toString(sh))
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$svg$Svg$g,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg_Attributes$transform(trans)
-					]),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					A2(_andybalaam$sootl$Main$viewBackgrounds, model, time),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						A2(_andybalaam$sootl$Main$viewBases, model, time),
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							A2(_andybalaam$sootl$Main$viewPlayer, model, time),
-							A2(_andybalaam$sootl$Main$viewLights, model, time)))))
-			]));
-};
 var _andybalaam$sootl$Main$NewFrame = function (a) {
 	return {ctor: 'NewFrame', _0: a};
 };
@@ -9122,8 +9040,28 @@ var _andybalaam$sootl$Main$Circle = F3(
 	function (a, b, c) {
 		return {ctor: 'Circle', _0: a, _1: b, _2: c};
 	});
+var _andybalaam$sootl$Main$LevelTime = function (a) {
+	return {ctor: 'LevelTime', _0: a};
+};
+var _andybalaam$sootl$Main$levelTime = function (model) {
+	return _andybalaam$sootl$Main$LevelTime((model.time - model.startTime) / 1000);
+};
+var _andybalaam$sootl$Main$lightsAtTime = function (model) {
+	var t = _andybalaam$sootl$Main$levelTime(model);
+	return A2(
+		_elm_lang$core$List$map,
+		function (lig) {
+			return lig(t);
+		},
+		model.level.lights);
+};
 var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
-	var t = time - 5;
+	var msg = A3(
+		_andybalaam$sootl$Main$message,
+		time,
+		_andybalaam$sootl$Main$LevelTime(4.5),
+		_andybalaam$sootl$Main$LevelTime(4.0));
+	var t = _andybalaam$sootl$Main$secs(time) - 5;
 	var rr = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 95 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (95 - (45 * ((t - 7) / 5))) : 50);
 	var ry = (_elm_lang$core$Native_Utils.cmp(t, 7) < 0) ? 0.7 : ((_elm_lang$core$Native_Utils.cmp(t, 12) < 0) ? (0.7 + (0.3 * ((t - 7) / 5))) : 1);
 	var cxx = (_elm_lang$core$Native_Utils.cmp(t, 0) < 0) ? (300 - ((t + 5) * 60)) : ((0 - rr) * _elm_lang$core$Basics$sin(t));
@@ -9154,8 +9092,8 @@ var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
 				]),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy - 20, 'Stay away'),
-				A6(_andybalaam$sootl$Main$message, time, 4.5, 4.0, cxx, cyy + 27, 'from this!')))
+				A3(msg, cxx, cyy - 20, 'Stay away'),
+				A3(msg, cxx, cyy + 28, 'from this!')))
 	};
 };
 var _andybalaam$sootl$Main$level0 = {
@@ -9183,6 +9121,110 @@ var _andybalaam$sootl$Main$init = function (flags) {
 		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
+};
+var _andybalaam$sootl$Main$viewBases = F2(
+	function (model, time) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$List$concat(
+				A2(
+					_elm_lang$core$List$indexedMap,
+					A2(_andybalaam$sootl$Main$viewBase, model, time),
+					model.level.bases)),
+			A6(
+				_andybalaam$sootl$Main$message,
+				time,
+				_andybalaam$sootl$Main$LevelTime(2.5),
+				_andybalaam$sootl$Main$LevelTime(2.0),
+				40,
+				-25,
+				'Touch to move here'));
+	});
+var _andybalaam$sootl$Main$viewPlayer = F2(
+	function (model, time) {
+		var x = _elm_lang$core$Native_Utils.eq(model.player.position, 0) ? -40 : 40;
+		return _elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$svg$Svg$g,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$svg$Svg_Attributes$transform(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'translate(',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(x),
+								',0)')))
+					]),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					A2(_andybalaam$sootl$Main$playerHappyFace, model, time),
+					A6(
+						_andybalaam$sootl$Main$message,
+						time,
+						_andybalaam$sootl$Main$LevelTime(0.5),
+						_andybalaam$sootl$Main$LevelTime(2.0),
+						0,
+						-25,
+						'This is you')))
+			]);
+	});
+var _andybalaam$sootl$Main$view = function (model) {
+	var sh = model.screen.height - 0;
+	var sw = model.screen.width - 0;
+	var min = (_elm_lang$core$Native_Utils.cmp(sw, sh) < 0) ? sw : sh;
+	var ty = (sh - min) / 2;
+	var tx = (sw - min) / 2;
+	var trans = A2(
+		_elm_lang$core$Basics_ops['++'],
+		'translate(',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(tx),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				',',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(ty),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'),scale(',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(min / 200),
+							'),translate(100, 100)'))))));
+	var time = _andybalaam$sootl$Main$levelTime(model);
+	return A2(
+		_elm_lang$svg$Svg$svg,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$svg$Svg_Attributes$width(
+				_elm_lang$core$Basics$toString(sw)),
+				_elm_lang$svg$Svg_Attributes$height(
+				_elm_lang$core$Basics$toString(sh))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$svg$Svg$g,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$svg$Svg_Attributes$transform(trans)
+					]),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					A2(_andybalaam$sootl$Main$viewBackgrounds, model, time),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						A2(_andybalaam$sootl$Main$viewBases, model, time),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							A2(_andybalaam$sootl$Main$viewPlayer, model, time),
+							A2(_andybalaam$sootl$Main$viewLights, model, time)))))
+			]));
 };
 var _andybalaam$sootl$Main$main = {
 	main: _elm_lang$html$Html_App$programWithFlags(
