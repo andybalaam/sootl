@@ -21,15 +21,14 @@ type HitShape = Circle Float Float Float
 
 
 type alias Light =
-    Time ->
-        { hitboxes : List HitShape
-        , svgs     : List (Svg Msg)
-        }
+    { hitboxes : List HitShape
+    , svgs     : List (Svg Msg)
+    }
 
 
 type alias Level =
-    { background : Time -> List (Svg Msg)
-    , lights : List Light
+    { background : LevelTime -> List (Svg Msg)
+    , lights : List (LevelTime -> Light)
     , bases : List HitShape
     }
 
@@ -49,11 +48,31 @@ type alias Model =
     , time : Time
     , level : Level
     , levelNum : Int
-    , player : { position : Int }
+    , player :
+        { position : Int
+        }
     }
 
 
-darkGreyBackground : Time -> List (Svg Msg)
+-- Time we are through a level in seconds
+type LevelTime = LevelTime Float
+
+
+levelTime : Model -> LevelTime
+levelTime model =
+    LevelTime <| (model.time - model.startTime) / 1000
+
+secs : LevelTime -> Float
+secs t = case t of LevelTime ti -> ti
+
+
+lightsAtTime : Model -> List Light
+lightsAtTime model =
+    let t = levelTime model in
+        List.map (\lig -> lig t) model.level.lights
+
+
+darkGreyBackground : LevelTime -> List (Svg Msg)
 darkGreyBackground t =
     [ rect
         [ x "-300"
@@ -66,9 +85,9 @@ darkGreyBackground t =
     ]
 
 
-slowlyCirclingCircle : Light
+slowlyCirclingCircle : LevelTime -> Light
 slowlyCirclingCircle time =
-    let t = time - 5
+    let t = (secs time) - 5
         rr =
             if t < 7       then 95
             else if t < 12 then 95 - 45 * ((t-7)/5)
@@ -79,6 +98,7 @@ slowlyCirclingCircle time =
             else 1
         cxx = if t < 0 then 300 - ((t+5) * 60) else -rr * sin t
         cyy = if t < 0 then -ry * rr           else -ry * rr * cos t
+        msg = message time (LevelTime 4.5) (LevelTime 4.0)
     in
         { hitboxes = [ Circle cxx cyy 15 ]
         , svgs =
@@ -91,8 +111,8 @@ slowlyCirclingCircle time =
                 ]
                 []
             ]
-            ++ (message time 4.5 4.0 cxx (cyy - 20) "Stay away")
-            ++ (message time 4.5 4.0 cxx (cyy + 27) "from this!")
+            ++ (msg cxx (cyy - 20) "Stay away")
+            ++ (msg cxx (cyy + 28) "from this!")
         }
 
 
@@ -130,7 +150,7 @@ init flags =
 view : Model -> Html Msg
 view model =
     let
-        time = (model.time - model.startTime) / 1000
+        time = levelTime model
         sw = model.screen.width  - 0
         sh = model.screen.height - 0
         min = if sw < sh then sw else sh
@@ -158,11 +178,15 @@ view model =
         ]
 
 
-viewBases : Model -> Time -> List (Svg Msg)
+viewBases : Model -> LevelTime -> List (Svg Msg)
 viewBases model time =
-    (
-        List.concat <| List.indexedMap (viewBase model time) model.level.bases )
-            ++ (message time 2.5 2.0 40 -25 "Touch to move here")
+    ((List.concat <| List.indexedMap (viewBase model time) model.level.bases)
+        ++ (message
+            time (LevelTime 2.5) (LevelTime 2.0)
+            40 -25
+            "Touch to move here"
+        )
+    )
 
 
 dist : Float -> Float -> Float -> Float -> Float
@@ -182,7 +206,7 @@ intersect s1 s2 =
                 Circle x2 y2 r2 -> (dist x1 y1 x2 y2) < (r1 + r2)
 
 
-isLit : Model -> Time -> HitShape -> Bool
+isLit : Model -> LevelTime -> HitShape -> Bool
 isLit model time shape =
     let intersectsLight time shape light =
         List.any (intersect shape) (light time).hitboxes
@@ -190,7 +214,7 @@ isLit model time shape =
         List.any (intersectsLight time shape) model.level.lights
 
 
-viewBase : Model -> Time -> Int -> HitShape -> List (Svg Msg)
+viewBase : Model -> LevelTime -> Int -> HitShape -> List (Svg Msg)
 viewBase model time which baseShape =
     let
         f =
@@ -214,7 +238,7 @@ viewBase model time which baseShape =
                 ]
 
 
-playerHappyFace : Model -> Time -> List (Svg Msg)
+playerHappyFace : Model -> LevelTime -> List (Svg Msg)
 playerHappyFace model time =
     [ g
         [ transform "scale(2.1,2.1)" ]
@@ -245,14 +269,16 @@ playerHappyFace model time =
     ]
 
 
-message : Time -> Time -> Time -> Float -> Float -> String -> List (Svg Msg)
+message :
+    LevelTime -> LevelTime -> LevelTime -> Float -> Float -> String
+    -> List (Svg Msg)
 message time tstart tlength xx yy txt =
-    let t = time - tstart in
+    let t = (secs time) - (secs tstart) in
         if t < 0 then
             []
         else
             let sz = 1 + t * 0.4
-                op = 1.0 * (tlength - t)
+                op = 1.0 * ((secs tlength) - t)
             in
                 if op < 0 then
                     []
@@ -278,7 +304,7 @@ message time tstart tlength xx yy txt =
                     ]
 
 
-viewPlayer : Model -> Time -> List (Svg Msg)
+viewPlayer : Model -> LevelTime -> List (Svg Msg)
 viewPlayer model time =
     let x =
         if model.player.position == 0 then -40 else 40
@@ -286,18 +312,19 @@ viewPlayer model time =
         [ g
             [ transform <| "translate(" ++ (toString x) ++ ",0)"
             ]
-            (  (playerHappyFace model time)
-            ++ (message time 0.5 2.0 0 -25 "This is you")
+            ( (playerHappyFace model time)
+            ++
+            (message time (LevelTime 0.5) (LevelTime 2.0) 0 -25 "This is you")
             )
         ]
 
 
-viewLights : Model -> Time -> List (Svg Msg)
+viewLights : Model -> LevelTime -> List (Svg Msg)
 viewLights model time =
     ( List.concat <| List.map (\lig -> (lig time).svgs) model.level.lights )
 
 
-viewBackgrounds : Model -> Time -> List (Svg Msg)
+viewBackgrounds : Model -> LevelTime -> List (Svg Msg)
 viewBackgrounds model time =
     model.level.background time
 
