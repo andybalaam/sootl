@@ -17,7 +17,14 @@ type alias Flags =
 type Msg = Resize Int Int | NewFrame Time | BaseClicked Int
 
 
-type HitShape = Circle Float Float Float
+type LevelPoint = LevelPoint {x : Float, y : Float}
+coords : LevelPoint -> {x : Float, y : Float}
+coords p =
+    case p of LevelPoint p -> p
+
+type HitShape = Circle LevelPoint Float
+makeCircle : Float -> Float -> Float -> HitShape
+makeCircle x y r = Circle (LevelPoint {x = x, y = y}) r
 
 
 type alias Light =
@@ -57,7 +64,6 @@ type alias Model =
 
 -- Time we are through a level in seconds
 type LevelTime = LevelTime Float
-
 
 levelTime : Model -> LevelTime
 levelTime model =
@@ -101,7 +107,7 @@ slowlyCirclingCircle time =
         cyy = if t < 0 then -ry * rr           else -ry * rr * cos t
         msg = message time (LevelTime 4.5) (LevelTime 4.0)
     in
-        { hitboxes = [ Circle cxx cyy 15 ]
+        { hitboxes = [ makeCircle cxx cyy 15 ]
         , svgs =
             [ circle
                 [ cx <| toString cxx
@@ -112,8 +118,8 @@ slowlyCirclingCircle time =
                 ]
                 []
             ]
-            ++ (msg cxx (cyy - 20) "Stay away")
-            ++ (msg cxx (cyy + 28) "from this!")
+            ++ (msg (LevelPoint {x=cxx, y=(cyy - 20)}) "Stay away")
+            ++ (msg (LevelPoint {x=cxx, y=(cyy + 28)}) "from this!")
         }
 
 
@@ -125,8 +131,8 @@ level0 =
         [ slowlyCirclingCircle
         ]
     , bases =
-        [ Circle -40 0 20
-        , Circle  40 0 20
+        [ makeCircle -40 0 20
+        , makeCircle  40 0 20
         ]
     }
 
@@ -187,17 +193,19 @@ viewBases model time =
     ((List.concat <| List.indexedMap (viewBase model time) model.level.bases)
         ++ (message
             time (LevelTime 2.5) (LevelTime 2.0)
-            40 -25
+            (LevelPoint {x=40, y=-25})
             "Touch to move here"
         )
     )
 
 
-dist : Float -> Float -> Float -> Float -> Float
-dist x1 y1 x2 y2 =
+dist : LevelPoint -> LevelPoint -> Float
+dist p1 p2 =
     let
-        dx = x1 - x2
-        dy = y1 - y2
+        pp1 = coords p1
+        pp2 = coords p2
+        dx = pp1.x - pp2.x
+        dy = pp1.y - pp2.y
     in
         sqrt (dx*dx + dy*dy)
 
@@ -205,9 +213,9 @@ dist x1 y1 x2 y2 =
 intersect : HitShape -> HitShape -> Bool
 intersect s1 s2 =
     case s1 of
-        Circle x1 y1 r1 ->
+        Circle p1 r1 ->
             case s2 of
-                Circle x2 y2 r2 -> (dist x1 y1 x2 y2) < (r1 + r2)
+                Circle p2 r2 -> (dist p1 p2) < (r1 + r2)
 
 
 isLit : Model -> LevelTime -> HitShape -> Bool
@@ -228,53 +236,57 @@ viewBase model time which baseShape =
                 "#005500"
     in
         case baseShape of
-            Circle x y rad ->
-                [ circle
-                    [ fill f
-                    , stroke "#000000"
-                    , strokeWidth "1px"
-                    , cx <| toString x
-                    , cy <| toString y
-                    , r  <| toString rad
-                    , onMouseDown (BaseClicked which)
+            Circle pp rad ->
+                let p = coords pp in
+                    [ circle
+                        [ fill f
+                        , stroke "#000000"
+                        , strokeWidth "1px"
+                        , cx <| toString p.x
+                        , cy <| toString p.y
+                        , r  <| toString rad
+                        , onMouseDown (BaseClicked which)
+                        ]
+                        []
                     ]
-                    []
-                ]
 
 
 playerSadFace : Model -> LevelTime -> List (Svg Msg)
 playerSadFace model time =
-    [ g
-        [ transform "scale(2.1,2.1)" ]
-        (
-            [ circle
-                [ fill "#ff3100"
-                , stroke "#000000"
-                , strokeWidth "1px"
-                , cx "0"
-                , cy "0"
-                , r "9.174984"
+    let
+        msg = message time time (LevelTime 1.0)
+    in
+        [ g
+            [ transform "scale(2.1,2.1)" ]
+            (
+                [ circle
+                    [ fill "#ff3100"
+                    , stroke "#000000"
+                    , strokeWidth "1px"
+                    , cx "0"
+                    , cy "0"
+                    , r "9.174984"
+                    ]
+                    []
+                , Svg.path
+                    [ fill "#000000"
+                    , stroke "#000000"
+                    , strokeWidth "1px"
+                    , d "m -7.7,-5.7 16.7303048,5.2248 c -0.459938,0.7095 -0.918545,1.3192 -1.372437,1.8333 -0.453892,0.5141 -0.960714,0.097 -1.401791,0.4236 l -0.920862,0.4509 -0.67903,-2.5808 -1.252743,1.3298 -0.88384,-1.5369 -1.359301,1.4435 -1.180369,-1.3734 c -4.3744806,2.9777 -8.6135091,1.2574 -7.6799318,-5.2165 z"
+                    ]
+                    []
+                , Svg.path
+                    [ fill "none"
+                    , stroke "#000000"
+                    , strokeWidth "1px"
+                    , d "m -4.5727929,4.2212 c 6.5205429,-1.4331 9.0681149,-1.0832 8.9673909,1.2228"
+                    ]
+                    []
                 ]
-                []
-            , Svg.path
-                [ fill "#000000"
-                , stroke "#000000"
-                , strokeWidth "1px"
-                , d "m -7.7,-5.7 16.7303048,5.2248 c -0.459938,0.7095 -0.918545,1.3192 -1.372437,1.8333 -0.453892,0.5141 -0.960714,0.097 -1.401791,0.4236 l -0.920862,0.4509 -0.67903,-2.5808 -1.252743,1.3298 -0.88384,-1.5369 -1.359301,1.4435 -1.180369,-1.3734 c -4.3744806,2.9777 -8.6135091,1.2574 -7.6799318,-5.2165 z"
-                ]
-                []
-            , Svg.path
-                [ fill "none"
-                , stroke "#000000"
-                , strokeWidth "1px"
-                , d "m -4.5727929,4.2212 c 6.5205429,-1.4331 9.0681149,-1.0832 8.9673909,1.2228"
-                ]
-                []
-            ]
-        ++ (message time time (LevelTime 1.0) 0 -12 "Bad luck")
-        ++ (message time time (LevelTime 1.0) 0  16 "You were seen!")
-        )
-    ]
+            ++ (msg (LevelPoint {x=0, y=-12}) "Bad luck")
+            ++ (msg (LevelPoint {x=0, y=16})  "You were seen!")
+            )
+        ]
 
 
 playerHappyFace : Model -> LevelTime -> List (Svg Msg)
@@ -309,10 +321,13 @@ playerHappyFace model time =
 
 
 message :
-    LevelTime -> LevelTime -> LevelTime -> Float -> Float -> String
+    LevelTime -> LevelTime -> LevelTime -> LevelPoint -> String
     -> List (Svg Msg)
-message time tstart tlength xx yy txt =
-    let t = (secs time) - (secs tstart) in
+message time tstart tlength p txt =
+    let
+        t = (secs time) - (secs tstart)
+        pp = coords p
+    in
         if t < 0 then
             []
         else
@@ -323,8 +338,8 @@ message time tstart tlength xx yy txt =
                     []
                 else
                     [ text'
-                        [ x <| toString xx
-                        , y <| toString yy
+                        [ x <| toString pp.x
+                        , y <| toString pp.y
                         , fontSize "8"
                         , fontFamily "arial,sans-serif"
                         , textAnchor "middle"
@@ -332,8 +347,8 @@ message time tstart tlength xx yy txt =
                         , fill "#ffffff"
                         , transform <|
                             "translate("
-                                ++ (toString (xx * (1 - sz))) ++ ","
-                                ++ (toString (yy * (1 - sz))) ++ ")"
+                                ++ (toString (pp.x * (1 - sz))) ++ ","
+                                ++ (toString (pp.y * (1 - sz))) ++ ")"
                             ++ ",scale("
                                 ++ (toString sz) ++ ", "
                                 ++ (toString sz) ++ ")"
@@ -354,7 +369,13 @@ viewPlayer model time =
             ]
             (  (render model time)
             ++
-            (message time (LevelTime 0.5) (LevelTime 2.0) 0 -25 "This is you")
+            (message
+                time
+                (LevelTime 0.5)
+                (LevelTime 2.0)
+                (LevelPoint {x=0, y=-25})
+                "This is you"
+            )
             )
         ]
 
@@ -399,7 +420,7 @@ getItem n xs =
 
 noShape : HitShape
 noShape =
-    Circle 0 0 0
+    makeCircle 0 0 0
 
 
 updateNewFrame : Time -> Model -> Model
