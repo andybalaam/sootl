@@ -65,9 +65,11 @@ type alias Model =
 -- Time we are through a level in seconds
 type LevelTime = LevelTime Float
 
+
 levelTime : Model -> LevelTime
 levelTime model =
     LevelTime <| (model.time - model.startTime) / 1000
+
 
 secs : LevelTime -> Float
 secs t = case t of LevelTime ti -> ti
@@ -415,7 +417,7 @@ updateResize w h model =
 
 getItem : Int -> List a -> Maybe a
 getItem n xs =
-    List.head <| List.drop (n-1) xs
+    List.head <| List.drop n xs
 
 
 noShape : HitShape
