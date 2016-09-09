@@ -8753,7 +8753,7 @@ _elm_lang$core$Native_Platform.effectManagers['Window'] = {pkg: 'elm-lang/window
 var _andybalaam$sootl$Main$getItem = F2(
 	function (n, xs) {
 		return _elm_lang$core$List$head(
-			A2(_elm_lang$core$List$drop, n - 1, xs));
+			A2(_elm_lang$core$List$drop, n, xs));
 	});
 var _andybalaam$sootl$Main$updateResize = F3(
 	function (w, h, model) {
