@@ -9040,6 +9040,34 @@ var _andybalaam$sootl$Main$makeCircle = F3(
 				{x: x, y: y}),
 			r);
 	});
+var _andybalaam$sootl$Main$circleLight = F3(
+	function (size, color, p) {
+		var pp = _andybalaam$sootl$Main$coords(p);
+		return {
+			hitboxes: _elm_lang$core$Native_List.fromArray(
+				[
+					A3(_andybalaam$sootl$Main$makeCircle, pp.x, pp.y, size)
+				]),
+			svgs: _elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$svg$Svg$circle,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$svg$Svg_Attributes$cx(
+							_elm_lang$core$Basics$toString(pp.x)),
+							_elm_lang$svg$Svg_Attributes$cy(
+							_elm_lang$core$Basics$toString(pp.y)),
+							_elm_lang$svg$Svg_Attributes$r(
+							_elm_lang$core$Basics$toString(size)),
+							_elm_lang$svg$Svg_Attributes$fill(color),
+							_elm_lang$svg$Svg_Attributes$opacity('0.7')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[]))
+				])
+		};
+	});
 var _andybalaam$sootl$Main$noShape = A3(_andybalaam$sootl$Main$makeCircle, 0, 0, 0);
 var _andybalaam$sootl$Main$LevelTime = function (a) {
 	return {ctor: 'LevelTime', _0: a};
@@ -9096,6 +9124,65 @@ var _andybalaam$sootl$Main$update = F2(
 		}();
 		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
 	});
+var _andybalaam$sootl$Main$slide = F6(
+	function (time, startT, endT, startP, endP, pos2Light) {
+		var endTT = _andybalaam$sootl$Main$secs(endT);
+		var startTT = _andybalaam$sootl$Main$secs(startT);
+		var ttime = _andybalaam$sootl$Main$secs(time);
+		var p = function () {
+			if (_elm_lang$core$Native_Utils.cmp(ttime, startTT) < 0) {
+				return startP;
+			} else {
+				if (_elm_lang$core$Native_Utils.cmp(ttime, endTT) > 0) {
+					return endP;
+				} else {
+					var endPP = _andybalaam$sootl$Main$coords(endP);
+					var startPP = _andybalaam$sootl$Main$coords(startP);
+					var i = (ttime - startTT) / (endTT - startTT);
+					var j = _elm_lang$core$Basics$sin((((2 * i) - 1) * _elm_lang$core$Basics$pi) / 2);
+					var k = (1 + j) / 2;
+					var x = startPP.x + (k * (endPP.x - startPP.x));
+					var y = startPP.y + (k * (endPP.y - startPP.y));
+					return _andybalaam$sootl$Main$LevelPoint(
+						{x: x, y: y});
+				}
+			}
+		}();
+		var aboveP = function () {
+			var _p6 = p;
+			return _andybalaam$sootl$Main$LevelPoint(
+				{x: _p6._0.x, y: _p6._0.y - 12});
+		}();
+		var msg = A5(
+			_andybalaam$sootl$Main$message,
+			time,
+			_andybalaam$sootl$Main$LevelTime(6.5),
+			_andybalaam$sootl$Main$LevelTime(3.0),
+			aboveP,
+			'and this!');
+		var light = pos2Light(p);
+		return _elm_lang$core$Native_Utils.update(
+			light,
+			{
+				svgs: A2(_elm_lang$core$Basics_ops['++'], light.svgs, msg)
+			});
+	});
+var _andybalaam$sootl$Main$mischiefCircle = function (time) {
+	var endP = _andybalaam$sootl$Main$LevelPoint(
+		{x: 80, y: 80});
+	var startP = _andybalaam$sootl$Main$LevelPoint(
+		{x: -20, y: 80});
+	var endT = _andybalaam$sootl$Main$LevelTime(8);
+	var startT = _andybalaam$sootl$Main$LevelTime(7);
+	return A6(
+		_andybalaam$sootl$Main$slide,
+		time,
+		startT,
+		endT,
+		startP,
+		endP,
+		A2(_andybalaam$sootl$Main$circleLight, 10, '#7777ff'));
+};
 var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
 	var msg = A3(
 		_andybalaam$sootl$Main$message,
@@ -9148,7 +9235,7 @@ var _andybalaam$sootl$Main$slowlyCirclingCircle = function (time) {
 var _andybalaam$sootl$Main$level0 = {
 	background: _andybalaam$sootl$Main$darkGreyBackground,
 	lights: _elm_lang$core$Native_List.fromArray(
-		[_andybalaam$sootl$Main$slowlyCirclingCircle]),
+		[_andybalaam$sootl$Main$slowlyCirclingCircle, _andybalaam$sootl$Main$mischiefCircle]),
 	bases: _elm_lang$core$Native_List.fromArray(
 		[
 			A3(_andybalaam$sootl$Main$makeCircle, -40, 0, 20),
