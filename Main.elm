@@ -94,6 +94,73 @@ darkGreyBackground t =
     ]
 
 
+circleLight : Float -> String -> LevelPoint -> Light
+circleLight size color p =
+    let pp = coords p in
+        { hitboxes = [ makeCircle pp.x pp.y size ]
+            , svgs =
+                [ circle
+                    [ cx <| toString pp.x
+                    , cy <| toString pp.y
+                    , r  <| toString size
+                    , fill color
+                    , opacity "0.7"
+                    ]
+                    []
+                ]
+            }
+
+
+slide :
+    LevelTime
+    -> LevelTime
+    -> LevelTime
+    -> LevelPoint
+    -> LevelPoint
+    -> (LevelPoint -> Light)
+    -> Light
+slide time startT endT startP endP pos2Light =
+    let
+        ttime = secs time
+        startTT = secs startT
+        endTT = secs endT
+        p =
+            if ttime < startTT then
+                startP
+            else if ttime > endTT then
+                endP
+            else
+                let
+                    i = (ttime - startTT) / (endTT - startTT)
+                    j = sin ((2*i-1) * pi / 2)
+                    k = (1 + j) / 2
+                    startPP = coords startP
+                    endPP   = coords endP
+                    x = startPP.x + (k * (endPP.x - startPP.x))
+                    y = startPP.y + (k * (endPP.y - startPP.y))
+                in
+                    LevelPoint {x=x, y=y}
+    in
+        let
+            light = pos2Light p
+            aboveP = case p of LevelPoint {x, y} -> LevelPoint {x=x, y=y-12}
+            msg = (message
+                time (LevelTime 6.5) (LevelTime 3.0) aboveP "and this!")
+        in
+            { light | svgs = light.svgs ++ msg }
+
+
+mischiefCircle : LevelTime -> Light
+mischiefCircle time =
+    let
+        startT = LevelTime 7
+        endT   = LevelTime 8
+        startP = LevelPoint {x=-20, y=80}
+        endP   = LevelPoint {x=80, y=80}
+    in
+        slide time startT endT startP endP (circleLight 10 "#7777ff")
+
+
 slowlyCirclingCircle : LevelTime -> Light
 slowlyCirclingCircle time =
     let t = (secs time) - 5
@@ -131,6 +198,7 @@ level0 =
         darkGreyBackground
     , lights =
         [ slowlyCirclingCircle
+        , mischiefCircle
         ]
     , bases =
         [ makeCircle -40 0 20
