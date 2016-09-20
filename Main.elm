@@ -17,10 +17,22 @@ type alias Flags =
 type Msg = Resize Int Int | NewFrame Time | BaseClicked Int
 
 
-type LevelPoint = LevelPoint {x : Float, y : Float}
-coords : LevelPoint -> {x : Float, y : Float}
+type alias LevelPointDef = {x : Float, y : Float}
+type LevelPoint = LevelPoint LevelPointDef
+coords : LevelPoint -> LevelPointDef
 coords p =
     case p of LevelPoint p -> p
+pt : Float -> Float -> LevelPoint
+pt x y =
+    LevelPoint {x=x, y=y}
+ptadd : LevelPoint -> LevelPoint -> LevelPoint
+ptadd p1 p2 =
+    let
+        c1 = coords p1
+        c2 = coords p2
+    in
+        pt (c1.x + c2.x) (c1.y + c2.y)
+
 
 type HitShape = Circle LevelPoint Float
 makeCircle : Float -> Float -> Float -> HitShape
@@ -33,12 +45,17 @@ type alias Light =
     }
 
 
-type alias Level =
+type alias LevelDef =
     { background : LevelTime -> List (Svg Msg)
-    , lights : List (LevelTime -> Light)
+    , lights : List Sprite
     , bases : List HitShape
     }
 
+type Level = Level LevelDef
+
+levelDef : Level -> LevelDef
+levelDef level =
+    case level of Level def -> def
 
 levels : List Level
 levels =
@@ -64,6 +81,9 @@ type alias Model =
 
 -- Time we are through a level in seconds
 type LevelTime = LevelTime Float
+ti : Float -> LevelTime
+ti t =
+    LevelTime t
 
 
 levelTime : Model -> LevelTime
@@ -73,12 +93,6 @@ levelTime model =
 
 secs : LevelTime -> Float
 secs t = case t of LevelTime ti -> ti
-
-
-lightsAtTime : Model -> List Light
-lightsAtTime model =
-    let t = levelTime model in
-        List.map (\lig -> lig t) model.level.lights
 
 
 darkGreyBackground : LevelTime -> List (Svg Msg)
@@ -94,117 +108,194 @@ darkGreyBackground t =
     ]
 
 
-circleLight : Float -> String -> LevelPoint -> Light
-circleLight size color p =
-    let pp = coords p in
-        { hitboxes = [ makeCircle pp.x pp.y size ]
-            , svgs =
-                [ circle
-                    [ cx <| toString pp.x
-                    , cy <| toString pp.y
-                    , r  <| toString size
-                    , fill color
-                    , opacity "0.7"
-                    ]
-                    []
-                ]
-            }
+type alias SpriteFrame = Light
+
+-- A sprite takes:
+--   - the previous frame of the sprite
+--   - a time delta since the previous frame
+--   - the model (i.e. the whole world)
+--   - a point give the position or position adjustment of the frame
+--   - the time or time adjustment
+-- and it returns the next frame
+type alias Sprite = SpriteFrame -> LevelTime -> Model -> LevelPoint -> LevelTime -> SpriteFrame
 
 
-slide :
-    LevelTime
-    -> LevelTime
-    -> LevelTime
-    -> LevelPoint
-    -> LevelPoint
-    -> (LevelPoint -> Light)
-    -> Light
-slide time startT endT startP endP pos2Light =
+
+whiteCircle : Sprite
+whiteCircle lastFrame deltaT model point time =
     let
-        ttime = secs time
-        startTT = secs startT
-        endTT = secs endT
-        p =
-            if ttime < startTT then
-                startP
-            else if ttime > endTT then
-                endP
-            else
-                let
-                    i = (ttime - startTT) / (endTT - startTT)
-                    j = sin ((2*i-1) * pi / 2)
-                    k = (1 + j) / 2
-                    startPP = coords startP
-                    endPP   = coords endP
-                    x = startPP.x + (k * (endPP.x - startPP.x))
-                    y = startPP.y + (k * (endPP.y - startPP.y))
-                in
-                    LevelPoint {x=x, y=y}
+        p = coords point
+        s = 13
+        c = "#ffffff"
+        o = "0.7"
     in
-        let
-            light = pos2Light p
-            aboveP = case p of LevelPoint {x, y} -> LevelPoint {x=x, y=y-12}
-            msg = (message
-                time (LevelTime 6.5) (LevelTime 3.0) aboveP "and this!")
-        in
-            { light | svgs = light.svgs ++ msg }
-
-
-mischiefCircle : LevelTime -> Light
-mischiefCircle time =
-    let
-        startT = LevelTime 7
-        endT   = LevelTime 8
-        startP = LevelPoint {x=-20, y=80}
-        endP   = LevelPoint {x=80, y=80}
-    in
-        slide time startT endT startP endP (circleLight 10 "#7777ff")
-
-
-slowlyCirclingCircle : LevelTime -> Light
-slowlyCirclingCircle time =
-    let t = (secs time) - 5
-        rr =
-            if t < 7       then 95
-            else if t < 12 then 95 - 45 * ((t-7)/5)
-            else                50
-        ry =
-            if t < 7 then 0.7
-            else if t < 12 then 0.7 + 0.3 * ((t-7)/5)
-            else 1
-        cxx = if t < 0 then 300 - ((t+5) * 60) else -rr * sin t
-        cyy = if t < 0 then -ry * rr           else -ry * rr * cos t
-        msg = message time (LevelTime 4.5) (LevelTime 4.0)
-    in
-        { hitboxes = [ makeCircle cxx cyy 15 ]
+        { hitboxes = [ makeCircle p.x p.y s ]
         , svgs =
             [ circle
-                [ cx <| toString cxx
-                , cy <| toString cyy
-                , r "15"
-                , fill "#eeeeff"
-                , opacity "0.7"
+                [ cx <| toString p.x
+                , cy <| toString p.y
+                , r  <| toString s
+                , fill c
+                , opacity o
                 ]
                 []
             ]
-            ++ (msg (LevelPoint {x=cxx, y=(cyy - 20)}) "Stay away")
-            ++ (msg (LevelPoint {x=cxx, y=(cyy + 28)}) "from this!")
         }
+
+
+moved : LevelPoint -> Sprite -> Sprite
+moved offsetP sprite lastFrame deltaT model point time =
+    sprite lastFrame deltaT model (ptadd point offsetP) time
+
+
+type alias Angle = Float
+
+
+circling : LevelPoint -> Float -> Angle -> Float -> Sprite -> Sprite
+circling
+    centre
+    radius
+    startAngle
+    circleTime
+    sprite
+    lastFrame deltaT model point time =
+    let
+        p = coords point
+        c = coords centre
+        t = secs time
+        theta = pi * 2 * t / circleTime
+        i = theta + startAngle
+        x = c.x + (radius * sin i)
+        y = c.y + (radius * cos i)
+    in
+        sprite
+            lastFrame
+            deltaT
+            model
+            (LevelPoint {x=p.x+x, y=p.y+y})
+            time
+
+still : Sprite -> Sprite
+still sprite =
+    sprite
+
+
+timeSlice : LevelTime -> Sprite -> Sprite -> Sprite
+timeSlice sliceTime before after =
+    \lastFrame deltaT model point time ->
+        let
+            t  = secs time
+            st = secs sliceTime
+        in
+            if secs time < secs sliceTime then
+                before lastFrame deltaT model point time
+            else
+                after lastFrame deltaT model point (ti (t - st))
+
+
+slide : LevelTime -> LevelPoint -> LevelPoint -> Sprite -> Sprite -> Sprite
+slide sliceTime startP endP during after lastFrame deltaT model point time =
+    let
+        ttime = secs time
+        endTT = secs sliceTime
+        p =
+            let
+                i = ttime / endTT
+                j = sin ((2*i-1) * pi / 2)
+                k = (1 + j) / 2
+                startPP = coords startP
+                endPP   = coords endP
+                x = startPP.x + (k * (endPP.x - startPP.x))
+                y = startPP.y + (k * (endPP.y - startPP.y))
+            in
+                LevelPoint {x=x, y=y}
+        sliced = timeSlice sliceTime (moved p during) after
+    in
+        sliced lastFrame deltaT model point time
+
+
+combine : SpriteFrame -> SpriteFrame -> SpriteFrame
+combine f1 f2 =
+    { hitboxes = f1.hitboxes ++ f2.hitboxes
+    , svgs = f1.svgs ++ f2.svgs }
+
+
+parallel : Sprite -> Sprite -> Sprite
+parallel sprite1 sprite2 lastFrame deltaT model point time =
+    combine
+        (sprite1 lastFrame deltaT model point time)
+        (sprite2 lastFrame deltaT model point time)
+
+
+message2 : LevelTime -> LevelTime -> LevelPoint -> String -> Sprite
+message2 startT endT deltaP txt lastFrame deltaT model point time =
+    let
+        t = (secs time) - (secs startT)
+        pp = coords (ptadd point deltaP)
+        sz = 1 + t * 0.4
+        op = 1.0 * ((secs endT) - (secs startT) - t)
+        svgs =
+            if op < 0 then
+                []
+            else
+                [ text'
+                    [ x <| toString pp.x
+                    , y <| toString pp.y
+                    , fontSize "8"
+                    , fontFamily "arial,sans-serif"
+                    , textAnchor "middle"
+                    , fontVariant "small-caps"
+                    , fill "#ffffff"
+                    , transform <|
+                        "translate("
+                            ++ (toString (pp.x * (1 - sz))) ++ ","
+                            ++ (toString (pp.y * (1 - sz))) ++ ")"
+                        ++ ",scale("
+                            ++ (toString sz) ++ ", "
+                            ++ (toString sz) ++ ")"
+                    , opacity <| toString op
+                    ]
+                    [ text txt ]
+                ]
+    in
+        { hitboxes = []
+        , svgs = svgs
+        }
+
+
+mischiefCircle : Sprite
+mischiefCircle =
+    let
+        c = whiteCircle
+        msg1 = message2 (ti 0.5) (ti 3) (pt 0 -15) "Stay away"
+        msg2 = message2 (ti 0.5) (ti 3) (pt 0  21) "from this!"
+        stayAwayCircle = parallel (parallel msg1 msg2) c
+    in
+           timeSlice (ti 4) (moved (pt 200 -70) c)
+        <| slide (ti 1) (pt 200 -70) (pt 0 -55) c
+        <| timeSlice (ti 4) (moved (pt 0 -55) stayAwayCircle)
+        <| slide (ti 0.5) (pt 0 -55) (pt 0 -75) c
+        <| timeSlice (ti 5) (circling (pt 0 0) 75 pi -5 c)
+        <| slide (ti 0.5) (pt 0 -75) (pt 0 -55) c
+        <| timeSlice (ti 5) (circling (pt 0 0) 55 pi -5 c)
+        <| timeSlice (ti 2) (moved (pt 0 -55) c)
+        <| timeSlice (ti 5) (circling (pt 0 0) 55 pi -5 c)
+        <| moved (pt 0 -55) c
 
 
 level0 : Level
 level0 =
-    { background =
-        darkGreyBackground
-    , lights =
-        [ slowlyCirclingCircle
-        , mischiefCircle
-        ]
-    , bases =
-        [ makeCircle -40 0 20
-        , makeCircle  40 0 20
-        ]
-    }
+    Level
+        { background =
+            darkGreyBackground
+        , lights =
+            [ mischiefCircle
+            ]
+        , bases =
+            [ makeCircle -40 0 20
+            , makeCircle  40 0 20
+            ]
+        }
 
 
 init : Flags -> (Model, Cmd Msg)
@@ -250,23 +341,26 @@ view model =
             [
                 transform trans
             ]
-            (  (viewBackgrounds model time)
-            ++ (viewBases  model time)
-            ++ (viewPlayer model time)
-            ++ (viewLights model time)
+            (  (viewBackgrounds model)
+            ++ (viewBases  model)
+            ++ (viewPlayer model)
+            ++ (viewLights model)
             )
         ]
 
 
-viewBases : Model -> LevelTime -> List (Svg Msg)
-viewBases model time =
-    ((List.concat <| List.indexedMap (viewBase model time) model.level.bases)
-        ++ (message
-            time (LevelTime 2.5) (LevelTime 2.0)
-            (LevelPoint {x=40, y=-25})
-            "Touch to move here"
+viewBases : Model -> List (Svg Msg)
+viewBases model =
+    let
+        time = levelTime model
+    in
+        ((List.concat <| List.indexedMap (viewBase model time) (levelDef model.level).bases)
+            ++ (message
+                time (LevelTime 2.5) (LevelTime 2.0)
+                (LevelPoint {x=40, y=-25})
+                "Touch to move here"
+            )
         )
-    )
 
 
 dist : LevelPoint -> LevelPoint -> Float
@@ -291,9 +385,9 @@ intersect s1 s2 =
 isLit : Model -> LevelTime -> HitShape -> Bool
 isLit model time shape =
     let intersectsLight time shape light =
-        List.any (intersect shape) (light time).hitboxes
+        List.any (intersect shape) (spriteFrame model light).hitboxes
     in
-        List.any (intersectsLight time shape) model.level.lights
+        List.any (intersectsLight time shape) (levelDef model.level).lights
 
 
 viewBase : Model -> LevelTime -> Int -> HitShape -> List (Svg Msg)
@@ -428,16 +522,17 @@ message time tstart tlength p txt =
                     ]
 
 
-viewPlayer : Model -> LevelTime -> List (Svg Msg)
-viewPlayer model time =
+viewPlayer : Model -> List (Svg Msg)
+viewPlayer model =
     let
         x = if model.player.position == 0 then -40 else 40
         render = if model.player.alive then playerHappyFace else playerSadFace
+        time = levelTime model
     in
         [ g
             [ transform <| "translate(" ++ (toString x) ++ ",0)"
             ]
-            (  (render model time)
+            ( (render model time)
             ++
             (message
                 time
@@ -450,14 +545,35 @@ viewPlayer model time =
         ]
 
 
-viewLights : Model -> LevelTime -> List (Svg Msg)
-viewLights model time =
-    ( List.concat <| List.map (\lig -> (lig time).svgs) model.level.lights )
+nullSpriteFrame =
+    { hitboxes = []
+    , svgs     = []
+    }
+
+nullTime =
+    LevelTime 0
 
 
-viewBackgrounds : Model -> LevelTime -> List (Svg Msg)
-viewBackgrounds model time =
-    model.level.background time
+spriteFrame : Model -> Sprite -> SpriteFrame
+spriteFrame model sprite =
+    let
+        time = levelTime model
+    in
+        sprite nullSpriteFrame nullTime model (LevelPoint {x=0, y=0}) time
+
+
+viewLights : Model -> List (Svg Msg)
+viewLights model =
+    ( List.concat
+        <| List.map
+            (\lig -> (spriteFrame model lig).svgs)
+            (levelDef model.level).lights
+    )
+
+
+viewBackgrounds : Model -> List (Svg Msg)
+viewBackgrounds model =
+    (levelDef model.level).background (levelTime model)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -500,7 +616,7 @@ updateNewFrame t model =
         st = if model.startTime == -1 then t else model.startTime
         baseShape =
             Maybe.withDefault noShape <|
-                getItem model.player.position model.level.bases
+                getItem model.player.position (levelDef model.level).bases
     in
         { model
             | time = t
