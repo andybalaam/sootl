@@ -227,8 +227,8 @@ parallel sprite1 sprite2 lastFrame deltaT model point time =
         (sprite2 lastFrame deltaT model point time)
 
 
-message2 : LevelTime -> LevelTime -> LevelPoint -> String -> Sprite
-message2 startT endT deltaP txt lastFrame deltaT model point time =
+message : LevelTime -> LevelTime -> LevelPoint -> String -> Sprite
+message startT endT deltaP txt lastFrame deltaT model point time =
     let
         t = (secs time) - (secs startT)
         pp = coords (ptadd point deltaP)
@@ -267,8 +267,8 @@ mischiefCircle : Sprite
 mischiefCircle =
     let
         c = whiteCircle
-        msg1 = message2 (ti 0.5) (ti 3) (pt 0 -15) "Stay away"
-        msg2 = message2 (ti 0.5) (ti 3) (pt 0  21) "from this!"
+        msg1 = message (ti 0.5) (ti 3) (pt 0 -15) "Stay away"
+        msg2 = message (ti 0.5) (ti 3) (pt 0  21) "from this!"
         stayAwayCircle = parallel (parallel msg1 msg2) c
     in
            timeSlice (ti 4) (moved (pt 200 -70) c)
@@ -355,7 +355,7 @@ viewBases model =
         time = levelTime model
     in
         ((List.concat <| List.indexedMap (viewBase model time) (levelDef model.level).bases)
-            ++ (message
+            ++ (baseMessage
                 time (LevelTime 2.5) (LevelTime 2.0)
                 (LevelPoint {x=40, y=-25})
                 "Touch to move here"
@@ -418,7 +418,7 @@ viewBase model time which baseShape =
 playerSadFace : Model -> LevelTime -> List (Svg Msg)
 playerSadFace model time =
     let
-        msg = message time time (LevelTime 1.0)
+        msg = baseMessage time time (LevelTime 1.0)
     in
         [ g
             [ transform "scale(2.1,2.1)" ]
@@ -484,10 +484,10 @@ playerHappyFace model time =
     ]
 
 
-message :
+baseMessage :
     LevelTime -> LevelTime -> LevelTime -> LevelPoint -> String
     -> List (Svg Msg)
-message time tstart tlength p txt =
+baseMessage time tstart tlength p txt =
     let
         t = (secs time) - (secs tstart)
         pp = coords p
@@ -534,7 +534,7 @@ viewPlayer model =
             ]
             ( (render model time)
             ++
-            (message
+            (baseMessage
                 time
                 (LevelTime 0.5)
                 (LevelTime 2.0)
