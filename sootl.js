@@ -9278,51 +9278,72 @@ var _andybalaam$sootl$Main$mischiefCircle = function () {
 					c,
 					A3(
 						_andybalaam$sootl$Main$timeSlice,
-						_andybalaam$sootl$Main$ti(5),
-						A5(
-							_andybalaam$sootl$Main$circling,
-							A2(_andybalaam$sootl$Main$pt, 0, 0),
-							75,
-							_elm_lang$core$Basics$pi,
-							-5,
-							c),
-						A5(
-							_andybalaam$sootl$Main$slide,
-							_andybalaam$sootl$Main$ti(0.5),
+						_andybalaam$sootl$Main$ti(1),
+						A2(
+							_andybalaam$sootl$Main$moved,
 							A2(_andybalaam$sootl$Main$pt, 0, -75),
-							A2(_andybalaam$sootl$Main$pt, 0, -55),
-							c,
+							c),
+						A3(
+							_andybalaam$sootl$Main$timeSlice,
+							_andybalaam$sootl$Main$ti(5),
+							A5(
+								_andybalaam$sootl$Main$circling,
+								A2(_andybalaam$sootl$Main$pt, 0, 0),
+								75,
+								_elm_lang$core$Basics$pi,
+								-5,
+								c),
 							A3(
 								_andybalaam$sootl$Main$timeSlice,
-								_andybalaam$sootl$Main$ti(5),
-								A5(
-									_andybalaam$sootl$Main$circling,
-									A2(_andybalaam$sootl$Main$pt, 0, 0),
-									55,
-									_elm_lang$core$Basics$pi,
-									-5,
+								_andybalaam$sootl$Main$ti(1),
+								A2(
+									_andybalaam$sootl$Main$moved,
+									A2(_andybalaam$sootl$Main$pt, 0, -75),
 									c),
-								A3(
-									_andybalaam$sootl$Main$timeSlice,
-									_andybalaam$sootl$Main$ti(2),
-									A2(
-										_andybalaam$sootl$Main$moved,
-										A2(_andybalaam$sootl$Main$pt, 0, -55),
-										c),
+								A5(
+									_andybalaam$sootl$Main$slide,
+									_andybalaam$sootl$Main$ti(0.5),
+									A2(_andybalaam$sootl$Main$pt, 0, -75),
+									A2(_andybalaam$sootl$Main$pt, 0, -55),
+									c,
 									A3(
 										_andybalaam$sootl$Main$timeSlice,
-										_andybalaam$sootl$Main$ti(5),
-										A5(
-											_andybalaam$sootl$Main$circling,
-											A2(_andybalaam$sootl$Main$pt, 0, 0),
-											55,
-											_elm_lang$core$Basics$pi,
-											-5,
-											c),
+										_andybalaam$sootl$Main$ti(1),
 										A2(
 											_andybalaam$sootl$Main$moved,
 											A2(_andybalaam$sootl$Main$pt, 0, -55),
-											c))))))))));
+											c),
+										A3(
+											_andybalaam$sootl$Main$timeSlice,
+											_andybalaam$sootl$Main$ti(5),
+											A5(
+												_andybalaam$sootl$Main$circling,
+												A2(_andybalaam$sootl$Main$pt, 0, 0),
+												55,
+												_elm_lang$core$Basics$pi,
+												-5,
+												c),
+											A3(
+												_andybalaam$sootl$Main$timeSlice,
+												_andybalaam$sootl$Main$ti(2),
+												A2(
+													_andybalaam$sootl$Main$moved,
+													A2(_andybalaam$sootl$Main$pt, 0, -55),
+													c),
+												A3(
+													_andybalaam$sootl$Main$timeSlice,
+													_andybalaam$sootl$Main$ti(5),
+													A5(
+														_andybalaam$sootl$Main$circling,
+														A2(_andybalaam$sootl$Main$pt, 0, 0),
+														55,
+														_elm_lang$core$Basics$pi,
+														-5,
+														c),
+													A2(
+														_andybalaam$sootl$Main$moved,
+														A2(_andybalaam$sootl$Main$pt, 0, -55),
+														c)))))))))))));
 }();
 var _andybalaam$sootl$Main$level0 = _andybalaam$sootl$Main$Level(
 	{
