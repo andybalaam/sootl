@@ -243,25 +243,7 @@ message startT endT deltaP txt lastFrame deltaT model point time =
             if op < 0 then
                 []
             else
-                [ text'
-                    [ x <| toString pp.x
-                    , y <| toString pp.y
-                    , fontSize "8"
-                    , fontFamily "arial,sans-serif"
-                    , textAnchor "middle"
-                    , fontVariant "small-caps"
-                    , fill "#ffffff"
-                    , transform <|
-                        "translate("
-                            ++ (toString (pp.x * (1 - sz))) ++ ","
-                            ++ (toString (pp.y * (1 - sz))) ++ ")"
-                        ++ ",scale("
-                            ++ (toString sz) ++ ", "
-                            ++ (toString sz) ++ ")"
-                    , opacity <| toString op
-                    ]
-                    [ text txt ]
-                ]
+                [ textSvg pp.x pp.y sz "#ffffff" op txt ]
     in
         { hitboxes = []
         , svgs = svgs
@@ -492,6 +474,28 @@ playerHappyFace model time =
     ]
 
 
+textSvg : Float -> Float -> Float -> String -> Float -> String -> Svg Msg
+textSvg px py scale colour op txt =
+    text'
+        [ x <| toString px
+        , y <| toString py
+        , fontSize "8"
+        , fontFamily "arial,sans-serif"
+        , textAnchor "middle"
+        , fontVariant "small-caps"
+        , fill colour
+        , transform <|
+            "translate("
+                ++ (toString (px * (1 - scale))) ++ ","
+                ++ (toString (py * (1 - scale))) ++ ")"
+            ++ ",scale("
+                ++ (toString scale) ++ ", "
+                ++ (toString scale) ++ ")"
+        , opacity <| toString op
+        ]
+        [ text txt ]
+
+
 baseMessage :
     LevelTime -> LevelTime -> LevelTime -> LevelPoint -> String
     -> List (Svg Msg)
@@ -509,25 +513,7 @@ baseMessage time tstart tlength p txt =
                 if op < 0 then
                     []
                 else
-                    [ text'
-                        [ x <| toString pp.x
-                        , y <| toString pp.y
-                        , fontSize "8"
-                        , fontFamily "arial,sans-serif"
-                        , textAnchor "middle"
-                        , fontVariant "small-caps"
-                        , fill "#ffffff"
-                        , transform <|
-                            "translate("
-                                ++ (toString (pp.x * (1 - sz))) ++ ","
-                                ++ (toString (pp.y * (1 - sz))) ++ ")"
-                            ++ ",scale("
-                                ++ (toString sz) ++ ", "
-                                ++ (toString sz) ++ ")"
-                        , opacity <| toString op
-                        ]
-                        [ text txt ]
-                    ]
+                    [ textSvg pp.x pp.y sz "#ffffff" op txt ]
 
 
 viewPlayer : Model -> List (Svg Msg)
