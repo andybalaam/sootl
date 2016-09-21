@@ -335,6 +335,7 @@ view model =
             ++ (viewBases  model)
             ++ (viewPlayer model)
             ++ (viewLights model)
+            ++ (viewRestartButton model)
             )
         ]
 
@@ -520,9 +521,7 @@ viewPlayer : Model -> List (Svg Msg)
 viewPlayer model =
     let
         x = if model.player.position == 0 then -40 else 40
-        render = case model.player.deathTime of
-            Nothing -> playerHappyFace
-            _       -> playerSadFace
+        render = if isPlayerAlive model then playerHappyFace else playerSadFace
         time = levelTime model
     in
         [ g
@@ -539,6 +538,24 @@ viewPlayer model =
             )
             )
         ]
+
+
+isPlayerAlive : Model -> Bool
+isPlayerAlive model =
+    case model.player.deathTime of
+        Nothing -> True
+        _       -> False
+
+
+viewRestartButton : Model -> List (Svg Msg)
+viewRestartButton model =
+    let
+        t = levelTime model
+    in
+        if isPlayerAlive model then
+            []
+        else
+            [ textSvg 0 80 3 "#55ffff" 0.9 "Try again" ]
 
 
 nullSpriteFrame =
