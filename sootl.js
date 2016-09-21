@@ -9278,7 +9278,7 @@ var _andybalaam$sootl$Main$mischiefCircle = function () {
 					c,
 					A3(
 						_andybalaam$sootl$Main$timeSlice,
-						_andybalaam$sootl$Main$ti(1),
+						_andybalaam$sootl$Main$ti(0.5),
 						A2(
 							_andybalaam$sootl$Main$moved,
 							A2(_andybalaam$sootl$Main$pt, 0, -75),
@@ -9295,7 +9295,7 @@ var _andybalaam$sootl$Main$mischiefCircle = function () {
 								c),
 							A3(
 								_andybalaam$sootl$Main$timeSlice,
-								_andybalaam$sootl$Main$ti(1),
+								_andybalaam$sootl$Main$ti(0.5),
 								A2(
 									_andybalaam$sootl$Main$moved,
 									A2(_andybalaam$sootl$Main$pt, 0, -75),
@@ -9308,7 +9308,7 @@ var _andybalaam$sootl$Main$mischiefCircle = function () {
 									c,
 									A3(
 										_andybalaam$sootl$Main$timeSlice,
-										_andybalaam$sootl$Main$ti(1),
+										_andybalaam$sootl$Main$ti(0.5),
 										A2(
 											_andybalaam$sootl$Main$moved,
 											A2(_andybalaam$sootl$Main$pt, 0, -55),
@@ -9325,7 +9325,7 @@ var _andybalaam$sootl$Main$mischiefCircle = function () {
 												c),
 											A3(
 												_andybalaam$sootl$Main$timeSlice,
-												_andybalaam$sootl$Main$ti(2),
+												_andybalaam$sootl$Main$ti(1),
 												A2(
 													_andybalaam$sootl$Main$moved,
 													A2(_andybalaam$sootl$Main$pt, 0, -55),
