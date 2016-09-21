@@ -8780,6 +8780,66 @@ var _andybalaam$sootl$Main$nullSpriteFrame = {
 	svgs: _elm_lang$core$Native_List.fromArray(
 		[])
 };
+var _andybalaam$sootl$Main$isPlayerAlive = function (model) {
+	var _p0 = model.player.deathTime;
+	if (_p0.ctor === 'Nothing') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _andybalaam$sootl$Main$textSvg = F6(
+	function (px, py, scale, colour, op, txt) {
+		return A2(
+			_elm_lang$svg$Svg$text$,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$x(
+					_elm_lang$core$Basics$toString(px)),
+					_elm_lang$svg$Svg_Attributes$y(
+					_elm_lang$core$Basics$toString(py)),
+					_elm_lang$svg$Svg_Attributes$fontSize('8'),
+					_elm_lang$svg$Svg_Attributes$fontFamily('arial,sans-serif'),
+					_elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+					_elm_lang$svg$Svg_Attributes$fontVariant('small-caps'),
+					_elm_lang$svg$Svg_Attributes$fill(colour),
+					_elm_lang$svg$Svg_Attributes$transform(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'translate(',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(px * (1 - scale)),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								',',
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(py * (1 - scale)),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										')',
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											',scale(',
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(scale),
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													', ',
+													A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(scale),
+														')')))))))))),
+					_elm_lang$svg$Svg_Attributes$opacity(
+					_elm_lang$core$Basics$toString(op))
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg$text(txt)
+				]));
+	});
 var _andybalaam$sootl$Main$playerHappyFace = F2(
 	function (model, time) {
 		return _elm_lang$core$Native_List.fromArray(
@@ -8865,16 +8925,16 @@ var _andybalaam$sootl$Main$darkGreyBackground = function (t) {
 		]);
 };
 var _andybalaam$sootl$Main$secs = function (t) {
-	var _p0 = t;
-	return _p0._0;
-};
-var _andybalaam$sootl$Main$levelDef = function (level) {
-	var _p1 = level;
+	var _p1 = t;
 	return _p1._0;
 };
-var _andybalaam$sootl$Main$coords = function (p) {
-	var _p2 = p;
+var _andybalaam$sootl$Main$levelDef = function (level) {
+	var _p2 = level;
 	return _p2._0;
+};
+var _andybalaam$sootl$Main$coords = function (p) {
+	var _p3 = p;
+	return _p3._0;
 };
 var _andybalaam$sootl$Main$dist = F2(
 	function (p1, p2) {
@@ -8886,11 +8946,11 @@ var _andybalaam$sootl$Main$dist = F2(
 	});
 var _andybalaam$sootl$Main$intersect = F2(
 	function (s1, s2) {
-		var _p3 = s1;
-		var _p4 = s2;
+		var _p4 = s1;
+		var _p5 = s2;
 		return _elm_lang$core$Native_Utils.cmp(
-			A2(_andybalaam$sootl$Main$dist, _p3._0, _p4._0),
-			_p3._1 + _p4._1) < 0;
+			A2(_andybalaam$sootl$Main$dist, _p4._0, _p5._0),
+			_p4._1 + _p5._1) < 0;
 	});
 var _andybalaam$sootl$Main$baseMessage = F5(
 	function (time, tstart, tlength, p, txt) {
@@ -8905,55 +8965,7 @@ var _andybalaam$sootl$Main$baseMessage = F5(
 			return (_elm_lang$core$Native_Utils.cmp(op, 0) < 0) ? _elm_lang$core$Native_List.fromArray(
 				[]) : _elm_lang$core$Native_List.fromArray(
 				[
-					A2(
-					_elm_lang$svg$Svg$text$,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$svg$Svg_Attributes$x(
-							_elm_lang$core$Basics$toString(pp.x)),
-							_elm_lang$svg$Svg_Attributes$y(
-							_elm_lang$core$Basics$toString(pp.y)),
-							_elm_lang$svg$Svg_Attributes$fontSize('8'),
-							_elm_lang$svg$Svg_Attributes$fontFamily('arial,sans-serif'),
-							_elm_lang$svg$Svg_Attributes$textAnchor('middle'),
-							_elm_lang$svg$Svg_Attributes$fontVariant('small-caps'),
-							_elm_lang$svg$Svg_Attributes$fill('#ffffff'),
-							_elm_lang$svg$Svg_Attributes$transform(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'translate(',
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(pp.x * (1 - sz)),
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										',',
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(pp.y * (1 - sz)),
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												')',
-												A2(
-													_elm_lang$core$Basics_ops['++'],
-													',scale(',
-													A2(
-														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(sz),
-														A2(
-															_elm_lang$core$Basics_ops['++'],
-															', ',
-															A2(
-																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(sz),
-																')')))))))))),
-							_elm_lang$svg$Svg_Attributes$opacity(
-							_elm_lang$core$Basics$toString(op))
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$svg$Svg$text(txt)
-						]))
+					A6(_andybalaam$sootl$Main$textSvg, pp.x, pp.y, sz, '#ffffff', op, txt)
 				]);
 		}
 	});
@@ -9035,55 +9047,7 @@ var _andybalaam$sootl$Main$message = F9(
 		var svgs = (_elm_lang$core$Native_Utils.cmp(op, 0) < 0) ? _elm_lang$core$Native_List.fromArray(
 			[]) : _elm_lang$core$Native_List.fromArray(
 			[
-				A2(
-				_elm_lang$svg$Svg$text$,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg_Attributes$x(
-						_elm_lang$core$Basics$toString(pp.x)),
-						_elm_lang$svg$Svg_Attributes$y(
-						_elm_lang$core$Basics$toString(pp.y)),
-						_elm_lang$svg$Svg_Attributes$fontSize('8'),
-						_elm_lang$svg$Svg_Attributes$fontFamily('arial,sans-serif'),
-						_elm_lang$svg$Svg_Attributes$textAnchor('middle'),
-						_elm_lang$svg$Svg_Attributes$fontVariant('small-caps'),
-						_elm_lang$svg$Svg_Attributes$fill('#ffffff'),
-						_elm_lang$svg$Svg_Attributes$transform(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'translate(',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(pp.x * (1 - sz)),
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									',',
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(pp.y * (1 - sz)),
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											')',
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												',scale(',
-												A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(sz),
-													A2(
-														_elm_lang$core$Basics_ops['++'],
-														', ',
-														A2(
-															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(sz),
-															')')))))))))),
-						_elm_lang$svg$Svg_Attributes$opacity(
-						_elm_lang$core$Basics$toString(op))
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg$text(txt)
-					]))
+				A6(_andybalaam$sootl$Main$textSvg, pp.x, pp.y, sz, '#ffffff', op, txt)
 			]);
 		return {
 			hitboxes: _elm_lang$core$Native_List.fromArray(
@@ -9374,14 +9338,22 @@ var _andybalaam$sootl$Main$init = function (flags) {
 };
 var _andybalaam$sootl$Main$levelTime = function (model) {
 	var t = function () {
-		var _p5 = model.player.deathTime;
-		if (_p5.ctor === 'Nothing') {
+		var _p6 = model.player.deathTime;
+		if (_p6.ctor === 'Nothing') {
 			return model.time;
 		} else {
-			return _p5._0;
+			return _p6._0;
 		}
 	}();
 	return _andybalaam$sootl$Main$LevelTime((t - model.startTime) / 1000);
+};
+var _andybalaam$sootl$Main$viewRestartButton = function (model) {
+	var t = _andybalaam$sootl$Main$levelTime(model);
+	return _andybalaam$sootl$Main$isPlayerAlive(model) ? _elm_lang$core$Native_List.fromArray(
+		[]) : _elm_lang$core$Native_List.fromArray(
+		[
+			A6(_andybalaam$sootl$Main$textSvg, 0, 80, 3, '#55ffff', 0.9, 'Try again')
+		]);
 };
 var _andybalaam$sootl$Main$viewBackgrounds = function (model) {
 	return _andybalaam$sootl$Main$levelDef(model.level).background(
@@ -9458,14 +9430,7 @@ var _andybalaam$sootl$Main$playerSadFace = F2(
 	});
 var _andybalaam$sootl$Main$viewPlayer = function (model) {
 	var time = _andybalaam$sootl$Main$levelTime(model);
-	var render = function () {
-		var _p6 = model.player.deathTime;
-		if (_p6.ctor === 'Nothing') {
-			return _andybalaam$sootl$Main$playerHappyFace;
-		} else {
-			return _andybalaam$sootl$Main$playerSadFace;
-		}
-	}();
+	var render = _andybalaam$sootl$Main$isPlayerAlive(model) ? _andybalaam$sootl$Main$playerHappyFace : _andybalaam$sootl$Main$playerSadFace;
 	var x = _elm_lang$core$Native_Utils.eq(model.player.position, 0) ? -40 : 40;
 	return _elm_lang$core$Native_List.fromArray(
 		[
@@ -9679,7 +9644,10 @@ var _andybalaam$sootl$Main$view = function (model) {
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							_andybalaam$sootl$Main$viewPlayer(model),
-							_andybalaam$sootl$Main$viewLights(model)))))
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_andybalaam$sootl$Main$viewLights(model),
+								_andybalaam$sootl$Main$viewRestartButton(model))))))
 			]));
 };
 var _andybalaam$sootl$Main$main = {
