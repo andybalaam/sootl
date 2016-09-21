@@ -74,7 +74,7 @@ type alias Model =
     , levelNum : Int
     , player :
         { position : Int
-        , alive : Bool
+        , deathTime : Maybe LevelTime
         }
     }
 
@@ -314,7 +314,7 @@ init flags =
         , levelNum = 0
         , player =
             { position = 0
-            , alive = True
+            , deathTime = Nothing
             }
         }
     , Cmd.none
@@ -529,7 +529,9 @@ viewPlayer : Model -> List (Svg Msg)
 viewPlayer model =
     let
         x = if model.player.position == 0 then -40 else 40
-        render = if model.player.alive then playerHappyFace else playerSadFace
+        render = case model.player.deathTime of
+            Nothing -> playerHappyFace
+            _       -> playerSadFace
         time = levelTime model
     in
         [ g
@@ -612,6 +614,16 @@ noShape =
     makeCircle 0 0 0
 
 
+calcDeathTime pl model baseShape t =
+    case pl.deathTime of
+        Just dt -> Just dt
+        Nothing ->
+            if (isLit model (levelTime model) baseShape) then
+                Just (LevelTime t)
+            else
+                Nothing
+
+
 updateNewFrame : Time -> Model -> Model
 updateNewFrame t model =
     let
@@ -624,12 +636,7 @@ updateNewFrame t model =
         { model
             | time = t
             , startTime = st
-            , player =
-                { pl
-                    | alive =
-                        pl.alive
-                        && not (isLit model (levelTime model) baseShape)
-                }
+            , player = { pl | deathTime = calcDeathTime pl model baseShape t }
         }
 
 
