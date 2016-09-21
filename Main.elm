@@ -275,13 +275,13 @@ mischiefCircle =
         <| slide (ti 1) (pt 200 -70) (pt 0 -55) c
         <| timeSlice (ti 4) (moved (pt 0 -55) stayAwayCircle)
         <| slide (ti 0.5) (pt 0 -55) (pt 0 -75) c
-        <| timeSlice (ti 1) (moved (pt 0 -75) c)
+        <| timeSlice (ti 0.5) (moved (pt 0 -75) c)
         <| timeSlice (ti 5) (circling (pt 0 0) 75 pi -5 c)
-        <| timeSlice (ti 1) (moved (pt 0 -75) c)
+        <| timeSlice (ti 0.5) (moved (pt 0 -75) c)
         <| slide (ti 0.5) (pt 0 -75) (pt 0 -55) c
-        <| timeSlice (ti 1) (moved (pt 0 -55) c)
+        <| timeSlice (ti 0.5) (moved (pt 0 -55) c)
         <| timeSlice (ti 5) (circling (pt 0 0) 55 pi -5 c)
-        <| timeSlice (ti 2) (moved (pt 0 -55) c)
+        <| timeSlice (ti 1) (moved (pt 0 -55) c)
         <| timeSlice (ti 5) (circling (pt 0 0) 55 pi -5 c)
         <| moved (pt 0 -55) c
 
