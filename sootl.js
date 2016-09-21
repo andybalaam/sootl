@@ -8892,7 +8892,7 @@ var _andybalaam$sootl$Main$intersect = F2(
 			A2(_andybalaam$sootl$Main$dist, _p3._0, _p4._0),
 			_p3._1 + _p4._1) < 0;
 	});
-var _andybalaam$sootl$Main$message = F5(
+var _andybalaam$sootl$Main$baseMessage = F5(
 	function (time, tstart, tlength, p, txt) {
 		var pp = _andybalaam$sootl$Main$coords(p);
 		var t = _andybalaam$sootl$Main$secs(time) - _andybalaam$sootl$Main$secs(tstart);
@@ -9025,7 +9025,7 @@ var _andybalaam$sootl$Main$moved = F7(
 			A2(_andybalaam$sootl$Main$ptadd, point, offsetP),
 			time);
 	});
-var _andybalaam$sootl$Main$message2 = F9(
+var _andybalaam$sootl$Main$message = F9(
 	function (startT, endT, deltaP, txt, lastFrame, deltaT, model, point, time) {
 		var pp = _andybalaam$sootl$Main$coords(
 			A2(_andybalaam$sootl$Main$ptadd, point, deltaP));
@@ -9234,13 +9234,13 @@ var _andybalaam$sootl$Main$slide = function (sliceTime) {
 };
 var _andybalaam$sootl$Main$mischiefCircle = function () {
 	var msg2 = A4(
-		_andybalaam$sootl$Main$message2,
+		_andybalaam$sootl$Main$message,
 		_andybalaam$sootl$Main$ti(0.5),
 		_andybalaam$sootl$Main$ti(3),
 		A2(_andybalaam$sootl$Main$pt, 0, 21),
 		'from this!');
 	var msg1 = A4(
-		_andybalaam$sootl$Main$message2,
+		_andybalaam$sootl$Main$message,
 		_andybalaam$sootl$Main$ti(0.5),
 		_andybalaam$sootl$Main$ti(3),
 		A2(_andybalaam$sootl$Main$pt, 0, -15),
@@ -9361,7 +9361,7 @@ var _andybalaam$sootl$Main$viewBackgrounds = function (model) {
 var _andybalaam$sootl$Main$playerSadFace = F2(
 	function (model, time) {
 		var msg = A3(
-			_andybalaam$sootl$Main$message,
+			_andybalaam$sootl$Main$baseMessage,
 			time,
 			time,
 			_andybalaam$sootl$Main$LevelTime(1.0));
@@ -9450,7 +9450,7 @@ var _andybalaam$sootl$Main$viewPlayer = function (model) {
 				_elm_lang$core$Basics_ops['++'],
 				A2(render, model, time),
 				A5(
-					_andybalaam$sootl$Main$message,
+					_andybalaam$sootl$Main$baseMessage,
 					time,
 					_andybalaam$sootl$Main$LevelTime(0.5),
 					_andybalaam$sootl$Main$LevelTime(2.0),
@@ -9523,7 +9523,7 @@ var _andybalaam$sootl$Main$viewBases = function (model) {
 				A2(_andybalaam$sootl$Main$viewBase, model, time),
 				_andybalaam$sootl$Main$levelDef(model.level).bases)),
 		A5(
-			_andybalaam$sootl$Main$message,
+			_andybalaam$sootl$Main$baseMessage,
 			time,
 			_andybalaam$sootl$Main$LevelTime(2.5),
 			_andybalaam$sootl$Main$LevelTime(2.0),
