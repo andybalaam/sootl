@@ -9373,7 +9373,15 @@ var _andybalaam$sootl$Main$init = function (flags) {
 	};
 };
 var _andybalaam$sootl$Main$levelTime = function (model) {
-	return _andybalaam$sootl$Main$LevelTime((model.time - model.startTime) / 1000);
+	var t = function () {
+		var _p5 = model.player.deathTime;
+		if (_p5.ctor === 'Nothing') {
+			return model.time;
+		} else {
+			return _p5._0;
+		}
+	}();
+	return _andybalaam$sootl$Main$LevelTime((t - model.startTime) / 1000);
 };
 var _andybalaam$sootl$Main$viewBackgrounds = function (model) {
 	return _andybalaam$sootl$Main$levelDef(model.level).background(
@@ -9451,8 +9459,8 @@ var _andybalaam$sootl$Main$playerSadFace = F2(
 var _andybalaam$sootl$Main$viewPlayer = function (model) {
 	var time = _andybalaam$sootl$Main$levelTime(model);
 	var render = function () {
-		var _p5 = model.player.deathTime;
-		if (_p5.ctor === 'Nothing') {
+		var _p6 = model.player.deathTime;
+		if (_p6.ctor === 'Nothing') {
 			return _andybalaam$sootl$Main$playerHappyFace;
 		} else {
 			return _andybalaam$sootl$Main$playerSadFace;
@@ -9517,8 +9525,8 @@ var _andybalaam$sootl$Main$isLit = F3(
 var _andybalaam$sootl$Main$viewBase = F4(
 	function (model, time, which, baseShape) {
 		var f = A3(_andybalaam$sootl$Main$isLit, model, time, baseShape) ? '#550000' : '#005500';
-		var _p6 = baseShape;
-		var p = _andybalaam$sootl$Main$coords(_p6._0);
+		var _p7 = baseShape;
+		var p = _andybalaam$sootl$Main$coords(_p7._0);
 		return _elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -9533,7 +9541,7 @@ var _andybalaam$sootl$Main$viewBase = F4(
 						_elm_lang$svg$Svg_Attributes$cy(
 						_elm_lang$core$Basics$toString(p.y)),
 						_elm_lang$svg$Svg_Attributes$r(
-						_elm_lang$core$Basics$toString(_p6._1)),
+						_elm_lang$core$Basics$toString(_p7._1)),
 						_elm_lang$svg$Svg_Events$onMouseDown(
 						_andybalaam$sootl$Main$BaseClicked(which))
 					]),
@@ -9559,6 +9567,57 @@ var _andybalaam$sootl$Main$viewBases = function (model) {
 				{x: 40, y: -25}),
 			'Touch to move here'));
 };
+var _andybalaam$sootl$Main$calcDeathTime = F4(
+	function (pl, model, baseShape, t) {
+		var _p8 = pl.deathTime;
+		if (_p8.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p8._0);
+		} else {
+			return A3(
+				_andybalaam$sootl$Main$isLit,
+				model,
+				_andybalaam$sootl$Main$levelTime(model),
+				baseShape) ? _elm_lang$core$Maybe$Just(t) : _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _andybalaam$sootl$Main$updateNewFrame = F2(
+	function (t, model) {
+		var baseShape = A2(
+			_elm_lang$core$Maybe$withDefault,
+			_andybalaam$sootl$Main$noShape,
+			A2(
+				_andybalaam$sootl$Main$getItem,
+				model.player.position,
+				_andybalaam$sootl$Main$levelDef(model.level).bases));
+		var st = _elm_lang$core$Native_Utils.eq(model.startTime, -1) ? t : model.startTime;
+		var pl = model.player;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				time: t,
+				startTime: st,
+				player: _elm_lang$core$Native_Utils.update(
+					pl,
+					{
+						deathTime: A4(_andybalaam$sootl$Main$calcDeathTime, pl, model, baseShape, t)
+					})
+			});
+	});
+var _andybalaam$sootl$Main$update = F2(
+	function (msg, model) {
+		var m = function () {
+			var _p9 = msg;
+			switch (_p9.ctor) {
+				case 'Resize':
+					return A3(_andybalaam$sootl$Main$updateResize, _p9._0, _p9._1, model);
+				case 'NewFrame':
+					return A2(_andybalaam$sootl$Main$updateNewFrame, _p9._0, model);
+				default:
+					return A2(_andybalaam$sootl$Main$updateMoveBase, _p9._0, model);
+			}
+		}();
+		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
+	});
 var _andybalaam$sootl$Main$viewLights = function (model) {
 	return _elm_lang$core$List$concat(
 		A2(
@@ -9623,58 +9682,6 @@ var _andybalaam$sootl$Main$view = function (model) {
 							_andybalaam$sootl$Main$viewLights(model)))))
 			]));
 };
-var _andybalaam$sootl$Main$calcDeathTime = F4(
-	function (pl, model, baseShape, t) {
-		var _p7 = pl.deathTime;
-		if (_p7.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p7._0);
-		} else {
-			return A3(
-				_andybalaam$sootl$Main$isLit,
-				model,
-				_andybalaam$sootl$Main$levelTime(model),
-				baseShape) ? _elm_lang$core$Maybe$Just(
-				_andybalaam$sootl$Main$LevelTime(t)) : _elm_lang$core$Maybe$Nothing;
-		}
-	});
-var _andybalaam$sootl$Main$updateNewFrame = F2(
-	function (t, model) {
-		var baseShape = A2(
-			_elm_lang$core$Maybe$withDefault,
-			_andybalaam$sootl$Main$noShape,
-			A2(
-				_andybalaam$sootl$Main$getItem,
-				model.player.position,
-				_andybalaam$sootl$Main$levelDef(model.level).bases));
-		var st = _elm_lang$core$Native_Utils.eq(model.startTime, -1) ? t : model.startTime;
-		var pl = model.player;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				time: t,
-				startTime: st,
-				player: _elm_lang$core$Native_Utils.update(
-					pl,
-					{
-						deathTime: A4(_andybalaam$sootl$Main$calcDeathTime, pl, model, baseShape, t)
-					})
-			});
-	});
-var _andybalaam$sootl$Main$update = F2(
-	function (msg, model) {
-		var m = function () {
-			var _p8 = msg;
-			switch (_p8.ctor) {
-				case 'Resize':
-					return A3(_andybalaam$sootl$Main$updateResize, _p8._0, _p8._1, model);
-				case 'NewFrame':
-					return A2(_andybalaam$sootl$Main$updateNewFrame, _p8._0, model);
-				default:
-					return A2(_andybalaam$sootl$Main$updateMoveBase, _p8._0, model);
-			}
-		}();
-		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
-	});
 var _andybalaam$sootl$Main$main = {
 	main: _elm_lang$html$Html_App$programWithFlags(
 		{init: _andybalaam$sootl$Main$init, view: _andybalaam$sootl$Main$view, update: _andybalaam$sootl$Main$update, subscriptions: _andybalaam$sootl$Main$subscriptions}),
