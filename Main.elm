@@ -74,7 +74,7 @@ type alias Model =
     , levelNum : Int
     , player :
         { position : Int
-        , deathTime : Maybe LevelTime
+        , deathTime : Maybe Time
         }
     }
 
@@ -88,7 +88,12 @@ ti t =
 
 levelTime : Model -> LevelTime
 levelTime model =
-    LevelTime <| (model.time - model.startTime) / 1000
+    let t =
+        case model.player.deathTime of
+            Nothing -> model.time
+            Just dt -> dt
+    in
+        LevelTime <| (t - model.startTime) / 1000
 
 
 secs : LevelTime -> Float
@@ -619,7 +624,7 @@ calcDeathTime pl model baseShape t =
         Just dt -> Just dt
         Nothing ->
             if (isLit model (levelTime model) baseShape) then
-                Just (LevelTime t)
+                Just t
             else
                 Nothing
 
