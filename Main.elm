@@ -290,22 +290,23 @@ level0 =
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
-    (
-        { screen =
-            { width = flags.width
-            , height = flags.height
-            }
-        , startTime = -1
-        , time = 0
-        , level = level0
-        , levelNum = 0
-        , player =
-            { position = 0
-            , deathTime = Nothing
-            }
+    ( initModel flags, Cmd.none )
+
+initModel : Flags -> Model
+initModel flags =
+    { screen =
+        { width = flags.width
+        , height = flags.height
         }
-    , Cmd.none
-    )
+    , startTime = -1
+    , time = 0
+    , level = level0
+    , levelNum = 0
+    , player =
+        { position = 0
+        , deathTime = Nothing
+        }
+    }
 
 
 view : Model -> Html Msg
@@ -600,7 +601,11 @@ update msg model =
             Resize w h -> updateResize w h model
             NewFrame t -> updateNewFrame t model
             BaseClicked which -> updateMoveBase which model
-            RestartClicked -> model
+            RestartClicked ->
+                ( initModel
+                    { width = model.screen.width
+                    , height = model.screen.height
+                    } )
     in
         (m, Cmd.none)
 
