@@ -14,7 +14,7 @@ type alias Flags =
     }
 
 
-type Msg = Resize Int Int | NewFrame Time | BaseClicked Int
+type Msg = Resize Int Int | NewFrame Time | BaseClicked Int | RestartClicked
 
 
 type alias LevelPointDef = {x : Float, y : Float}
@@ -243,7 +243,7 @@ message startT endT deltaP txt lastFrame deltaT model point time =
             if op < 0 then
                 []
             else
-                [ textSvg pp.x pp.y sz "#ffffff" op txt ]
+                [ textSvg pp.x pp.y sz "#ffffff" op txt [] ]
     in
         { hitboxes = []
         , svgs = svgs
@@ -475,10 +475,11 @@ playerHappyFace model time =
     ]
 
 
-textSvg : Float -> Float -> Float -> String -> Float -> String -> Svg Msg
-textSvg px py scale colour op txt =
+textSvg : Float -> Float -> Float -> String -> Float -> String
+    -> List (Attribute Msg) -> Svg Msg
+textSvg px py scale colour op txt attrs =
     text'
-        [ x <| toString px
+        ( [ x <| toString px
         , y <| toString py
         , fontSize "8"
         , fontFamily "arial,sans-serif"
@@ -493,7 +494,7 @@ textSvg px py scale colour op txt =
                 ++ (toString scale) ++ ", "
                 ++ (toString scale) ++ ")"
         , opacity <| toString op
-        ]
+        ] ++ attrs )
         [ text txt ]
 
 
@@ -514,7 +515,7 @@ baseMessage time tstart tlength p txt =
                 if op < 0 then
                     []
                 else
-                    [ textSvg pp.x pp.y sz "#ffffff" op txt ]
+                    [ textSvg pp.x pp.y sz "#ffffff" op txt [] ]
 
 
 viewPlayer : Model -> List (Svg Msg)
@@ -555,7 +556,10 @@ viewRestartButton model =
         if isPlayerAlive model then
             []
         else
-            [ textSvg 0 80 3 "#55ffff" 0.9 "Try again" ]
+            let
+                md = [onMouseDown RestartClicked]
+            in
+                [ textSvg 0 80 3 "#55ffff" 0.9 "Try again" md ]
 
 
 nullSpriteFrame =
@@ -596,6 +600,7 @@ update msg model =
             Resize w h -> updateResize w h model
             NewFrame t -> updateNewFrame t model
             BaseClicked which -> updateMoveBase which model
+            RestartClicked -> model
     in
         (m, Cmd.none)
 
