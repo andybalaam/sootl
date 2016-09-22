@@ -390,19 +390,23 @@ viewBase model time which baseShape =
                 "#550000"
             else
                 "#005500"
+        md =
+            if isPlayerAlive model then
+                [ onMouseDown (BaseClicked which) ]
+            else
+                []
     in
         case baseShape of
             Circle pp rad ->
                 let p = coords pp in
                     [ circle
-                        [ fill f
+                        ( [ fill f
                         , stroke "#000000"
                         , strokeWidth "1px"
                         , cx <| toString p.x
                         , cy <| toString p.y
                         , r  <| toString rad
-                        , onMouseDown (BaseClicked which)
-                        ]
+                        ] ++ md )
                         []
                     ]
 
