@@ -8997,9 +8997,9 @@ var _andybalaam$sootl$Main$LevelDef = F3(
 	function (a, b, c) {
 		return {background: a, lights: b, bases: c};
 	});
-var _andybalaam$sootl$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {screen: a, startTime: b, time: c, level: d, levelNum: e, player: f};
+var _andybalaam$sootl$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {screen: a, startTime: b, time: c, level: d, levelNum: e, player: f, bestTime: g};
 	});
 var _andybalaam$sootl$Main$RestartClicked = {ctor: 'RestartClicked'};
 var _andybalaam$sootl$Main$BaseClicked = function (a) {
@@ -9344,23 +9344,32 @@ var _andybalaam$sootl$Main$level0 = _andybalaam$sootl$Main$Level(
 	});
 var _andybalaam$sootl$Main$levels = _elm_lang$core$Native_List.fromArray(
 	[_andybalaam$sootl$Main$level0]);
-var _andybalaam$sootl$Main$initModel = function (flags) {
-	return {
-		screen: {width: flags.width, height: flags.height},
-		startTime: -1,
-		time: 0,
-		level: _andybalaam$sootl$Main$level0,
-		levelNum: 0,
-		player: {position: 0, deathTime: _elm_lang$core$Maybe$Nothing}
-	};
-};
+var _andybalaam$sootl$Main$initModel = F2(
+	function (flags, bestTime) {
+		return {
+			screen: {width: flags.width, height: flags.height},
+			startTime: -1,
+			time: 0,
+			level: _andybalaam$sootl$Main$level0,
+			levelNum: 0,
+			player: {position: 0, deathTime: _elm_lang$core$Maybe$Nothing},
+			bestTime: bestTime
+		};
+	});
 var _andybalaam$sootl$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
-		_0: _andybalaam$sootl$Main$initModel(flags),
+		_0: A2(
+			_andybalaam$sootl$Main$initModel,
+			flags,
+			_andybalaam$sootl$Main$ti(0)),
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
+var _andybalaam$sootl$Main$sinceStart = F2(
+	function (t, model) {
+		return _andybalaam$sootl$Main$LevelTime((t - model.startTime) / 1000);
+	});
 var _andybalaam$sootl$Main$levelTime = function (model) {
 	var t = function () {
 		var _p6 = model.player.deathTime;
@@ -9370,7 +9379,7 @@ var _andybalaam$sootl$Main$levelTime = function (model) {
 			return _p6._0;
 		}
 	}();
-	return _andybalaam$sootl$Main$LevelTime((t - model.startTime) / 1000);
+	return A2(_andybalaam$sootl$Main$sinceStart, t, model);
 };
 var _andybalaam$sootl$Main$viewRestartButton = function (model) {
 	var t = _andybalaam$sootl$Main$levelTime(model);
@@ -9387,6 +9396,42 @@ var _andybalaam$sootl$Main$viewRestartButton = function (model) {
 				A7(_andybalaam$sootl$Main$textSvg, 0, 80, 3, '#55ffff', 0.9, 'Try again', md)
 			]);
 	}
+};
+var _andybalaam$sootl$Main$viewScores = function (model) {
+	var hi = _elm_lang$core$Basics$round(
+		20 * _andybalaam$sootl$Main$secs(model.bestTime));
+	var sc = _elm_lang$core$Basics$round(
+		20 * _andybalaam$sootl$Main$secs(
+			_andybalaam$sootl$Main$levelTime(model)));
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			A7(
+			_andybalaam$sootl$Main$textSvg,
+			-90,
+			-90,
+			1,
+			'#ffffff',
+			1,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'Score: ',
+				_elm_lang$core$Basics$toString(sc)),
+			_elm_lang$core$Native_List.fromArray(
+				[])),
+			A7(
+			_andybalaam$sootl$Main$textSvg,
+			90,
+			-90,
+			1,
+			'#ffffff',
+			1,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'High: ',
+				_elm_lang$core$Basics$toString(hi)),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]);
 };
 var _andybalaam$sootl$Main$viewBackgrounds = function (model) {
 	return _andybalaam$sootl$Main$levelDef(model.level).background(
@@ -9585,47 +9630,6 @@ var _andybalaam$sootl$Main$calcDeathTime = F4(
 				baseShape) ? _elm_lang$core$Maybe$Just(t) : _elm_lang$core$Maybe$Nothing;
 		}
 	});
-var _andybalaam$sootl$Main$updateNewFrame = F2(
-	function (t, model) {
-		var baseShape = A2(
-			_elm_lang$core$Maybe$withDefault,
-			_andybalaam$sootl$Main$noShape,
-			A2(
-				_andybalaam$sootl$Main$getItem,
-				model.player.position,
-				_andybalaam$sootl$Main$levelDef(model.level).bases));
-		var st = _elm_lang$core$Native_Utils.eq(model.startTime, -1) ? t : model.startTime;
-		var pl = model.player;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				time: t,
-				startTime: st,
-				player: _elm_lang$core$Native_Utils.update(
-					pl,
-					{
-						deathTime: A4(_andybalaam$sootl$Main$calcDeathTime, pl, model, baseShape, t)
-					})
-			});
-	});
-var _andybalaam$sootl$Main$update = F2(
-	function (msg, model) {
-		var m = function () {
-			var _p9 = msg;
-			switch (_p9.ctor) {
-				case 'Resize':
-					return A3(_andybalaam$sootl$Main$updateResize, _p9._0, _p9._1, model);
-				case 'NewFrame':
-					return A2(_andybalaam$sootl$Main$updateNewFrame, _p9._0, model);
-				case 'BaseClicked':
-					return A2(_andybalaam$sootl$Main$updateMoveBase, _p9._0, model);
-				default:
-					return _andybalaam$sootl$Main$initModel(
-						{width: model.screen.width, height: model.screen.height});
-			}
-		}();
-		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
-	});
 var _andybalaam$sootl$Main$viewLights = function (model) {
 	return _elm_lang$core$List$concat(
 		A2(
@@ -9690,9 +9694,69 @@ var _andybalaam$sootl$Main$view = function (model) {
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								_andybalaam$sootl$Main$viewLights(model),
-								_andybalaam$sootl$Main$viewRestartButton(model))))))
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_andybalaam$sootl$Main$viewRestartButton(model),
+									_andybalaam$sootl$Main$viewScores(model)))))))
 			]));
 };
+var _andybalaam$sootl$Main$calcBestTime = F2(
+	function (deathTime, model) {
+		var _p9 = deathTime;
+		if (_p9.ctor === 'Nothing') {
+			return model.bestTime;
+		} else {
+			var oldTime = _andybalaam$sootl$Main$secs(model.bestTime);
+			var newTime = _andybalaam$sootl$Main$secs(
+				A2(_andybalaam$sootl$Main$sinceStart, _p9._0, model));
+			return _andybalaam$sootl$Main$LevelTime(
+				A2(_elm_lang$core$Basics$max, newTime, oldTime));
+		}
+	});
+var _andybalaam$sootl$Main$updateNewFrame = F2(
+	function (t, model) {
+		var baseShape = A2(
+			_elm_lang$core$Maybe$withDefault,
+			_andybalaam$sootl$Main$noShape,
+			A2(
+				_andybalaam$sootl$Main$getItem,
+				model.player.position,
+				_andybalaam$sootl$Main$levelDef(model.level).bases));
+		var st = _elm_lang$core$Native_Utils.eq(model.startTime, -1) ? t : model.startTime;
+		var pl = model.player;
+		var dt = A4(_andybalaam$sootl$Main$calcDeathTime, pl, model, baseShape, t);
+		var bt = A2(_andybalaam$sootl$Main$calcBestTime, dt, model);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				time: t,
+				startTime: st,
+				player: _elm_lang$core$Native_Utils.update(
+					pl,
+					{deathTime: dt}),
+				bestTime: bt
+			});
+	});
+var _andybalaam$sootl$Main$update = F2(
+	function (msg, model) {
+		var m = function () {
+			var _p10 = msg;
+			switch (_p10.ctor) {
+				case 'Resize':
+					return A3(_andybalaam$sootl$Main$updateResize, _p10._0, _p10._1, model);
+				case 'NewFrame':
+					return A2(_andybalaam$sootl$Main$updateNewFrame, _p10._0, model);
+				case 'BaseClicked':
+					return A2(_andybalaam$sootl$Main$updateMoveBase, _p10._0, model);
+				default:
+					return A2(
+						_andybalaam$sootl$Main$initModel,
+						{width: model.screen.width, height: model.screen.height},
+						model.bestTime);
+			}
+		}();
+		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
+	});
 var _andybalaam$sootl$Main$main = {
 	main: _elm_lang$html$Html_App$programWithFlags(
 		{init: _andybalaam$sootl$Main$init, view: _andybalaam$sootl$Main$view, update: _andybalaam$sootl$Main$update, subscriptions: _andybalaam$sootl$Main$subscriptions}),
