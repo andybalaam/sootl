@@ -9522,6 +9522,12 @@ var _andybalaam$sootl$Main$isLit = F3(
 	});
 var _andybalaam$sootl$Main$viewBase = F4(
 	function (model, time, which, baseShape) {
+		var md = _andybalaam$sootl$Main$isPlayerAlive(model) ? _elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$svg$Svg_Events$onMouseDown(
+				_andybalaam$sootl$Main$BaseClicked(which))
+			]) : _elm_lang$core$Native_List.fromArray(
+			[]);
 		var f = A3(_andybalaam$sootl$Main$isLit, model, time, baseShape) ? '#550000' : '#005500';
 		var _p7 = baseShape;
 		var p = _andybalaam$sootl$Main$coords(_p7._0);
@@ -9529,20 +9535,21 @@ var _andybalaam$sootl$Main$viewBase = F4(
 			[
 				A2(
 				_elm_lang$svg$Svg$circle,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$svg$Svg_Attributes$fill(f),
-						_elm_lang$svg$Svg_Attributes$stroke('#000000'),
-						_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
-						_elm_lang$svg$Svg_Attributes$cx(
-						_elm_lang$core$Basics$toString(p.x)),
-						_elm_lang$svg$Svg_Attributes$cy(
-						_elm_lang$core$Basics$toString(p.y)),
-						_elm_lang$svg$Svg_Attributes$r(
-						_elm_lang$core$Basics$toString(_p7._1)),
-						_elm_lang$svg$Svg_Events$onMouseDown(
-						_andybalaam$sootl$Main$BaseClicked(which))
-					]),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$svg$Svg_Attributes$fill(f),
+							_elm_lang$svg$Svg_Attributes$stroke('#000000'),
+							_elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+							_elm_lang$svg$Svg_Attributes$cx(
+							_elm_lang$core$Basics$toString(p.x)),
+							_elm_lang$svg$Svg_Attributes$cy(
+							_elm_lang$core$Basics$toString(p.y)),
+							_elm_lang$svg$Svg_Attributes$r(
+							_elm_lang$core$Basics$toString(_p7._1))
+						]),
+					md),
 				_elm_lang$core$Native_List.fromArray(
 					[]))
 			]);
