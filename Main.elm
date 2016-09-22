@@ -76,6 +76,7 @@ type alias Model =
         { position : Int
         , deathTime : Maybe Time
         }
+    , bestTime : LevelTime
     }
 
 
@@ -86,6 +87,11 @@ ti t =
     LevelTime t
 
 
+sinceStart : Time -> Model -> LevelTime
+sinceStart t model =
+    LevelTime <| (t - model.startTime) / 1000
+
+
 levelTime : Model -> LevelTime
 levelTime model =
     let t =
@@ -93,7 +99,7 @@ levelTime model =
             Nothing -> model.time
             Just dt -> dt
     in
-        LevelTime <| (t - model.startTime) / 1000
+        sinceStart t model
 
 
 secs : LevelTime -> Float
@@ -290,10 +296,10 @@ level0 =
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
-    ( initModel flags, Cmd.none )
+    ( initModel flags (ti 0), Cmd.none )
 
-initModel : Flags -> Model
-initModel flags =
+initModel : Flags -> LevelTime -> Model
+initModel flags bestTime =
     { screen =
         { width = flags.width
         , height = flags.height
@@ -306,6 +312,7 @@ initModel flags =
         { position = 0
         , deathTime = Nothing
         }
+    , bestTime = bestTime
     }
 
 
@@ -337,6 +344,7 @@ view model =
             ++ (viewPlayer model)
             ++ (viewLights model)
             ++ (viewRestartButton model)
+            ++ (viewScores model)
             )
         ]
 
@@ -566,6 +574,16 @@ viewRestartButton model =
             in
                 [ textSvg 0 80 3 "#55ffff" 0.9 "Try again" md ]
 
+viewScores : Model -> List (Svg Msg)
+viewScores model =
+    let
+        sc = round <| 20 * (secs (levelTime model))
+        hi = round <| 20 * (secs model.bestTime)
+    in
+        [ textSvg -90 -90 1 "#ffffff" 1 ("Score: " ++ (toString sc)) []
+        , textSvg  90 -90 1 "#ffffff" 1 ("High: "  ++ (toString hi)) []
+        ]
+
 
 nullSpriteFrame =
     { hitboxes = []
@@ -609,7 +627,9 @@ update msg model =
                 ( initModel
                     { width = model.screen.width
                     , height = model.screen.height
-                    } )
+                    }
+                    model.bestTime
+                )
     in
         (m, Cmd.none)
 
@@ -646,6 +666,18 @@ calcDeathTime pl model baseShape t =
                 Nothing
 
 
+calcBestTime : Maybe Time -> Model -> LevelTime
+calcBestTime deathTime model =
+    case deathTime of
+        Nothing -> model.bestTime
+        Just x ->
+            let
+                newTime = secs (sinceStart x model)
+                oldTime = secs model.bestTime
+            in
+                LevelTime (Basics.max newTime oldTime)
+
+
 updateNewFrame : Time -> Model -> Model
 updateNewFrame t model =
     let
@@ -654,11 +686,14 @@ updateNewFrame t model =
         baseShape =
             Maybe.withDefault noShape <|
                 getItem model.player.position (levelDef model.level).bases
+        dt = calcDeathTime pl model baseShape t
+        bt = calcBestTime dt model
     in
         { model
             | time = t
             , startTime = st
-            , player = { pl | deathTime = calcDeathTime pl model baseShape t }
+            , player = { pl | deathTime = dt }
+            , bestTime = bt
         }
 
 
