@@ -9344,17 +9344,20 @@ var _andybalaam$sootl$Main$level0 = _andybalaam$sootl$Main$Level(
 	});
 var _andybalaam$sootl$Main$levels = _elm_lang$core$Native_List.fromArray(
 	[_andybalaam$sootl$Main$level0]);
+var _andybalaam$sootl$Main$initModel = function (flags) {
+	return {
+		screen: {width: flags.width, height: flags.height},
+		startTime: -1,
+		time: 0,
+		level: _andybalaam$sootl$Main$level0,
+		levelNum: 0,
+		player: {position: 0, deathTime: _elm_lang$core$Maybe$Nothing}
+	};
+};
 var _andybalaam$sootl$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
-		_0: {
-			screen: {width: flags.width, height: flags.height},
-			startTime: -1,
-			time: 0,
-			level: _andybalaam$sootl$Main$level0,
-			levelNum: 0,
-			player: {position: 0, deathTime: _elm_lang$core$Maybe$Nothing}
-		},
+		_0: _andybalaam$sootl$Main$initModel(flags),
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
@@ -9610,7 +9613,8 @@ var _andybalaam$sootl$Main$update = F2(
 				case 'BaseClicked':
 					return A2(_andybalaam$sootl$Main$updateMoveBase, _p9._0, model);
 				default:
-					return model;
+					return _andybalaam$sootl$Main$initModel(
+						{width: model.screen.width, height: model.screen.height});
 			}
 		}();
 		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
