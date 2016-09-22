@@ -8788,53 +8788,56 @@ var _andybalaam$sootl$Main$isPlayerAlive = function (model) {
 		return false;
 	}
 };
-var _andybalaam$sootl$Main$textSvg = F6(
-	function (px, py, scale, colour, op, txt) {
+var _andybalaam$sootl$Main$textSvg = F7(
+	function (px, py, scale, colour, op, txt, attrs) {
 		return A2(
 			_elm_lang$svg$Svg$text$,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$svg$Svg_Attributes$x(
-					_elm_lang$core$Basics$toString(px)),
-					_elm_lang$svg$Svg_Attributes$y(
-					_elm_lang$core$Basics$toString(py)),
-					_elm_lang$svg$Svg_Attributes$fontSize('8'),
-					_elm_lang$svg$Svg_Attributes$fontFamily('arial,sans-serif'),
-					_elm_lang$svg$Svg_Attributes$textAnchor('middle'),
-					_elm_lang$svg$Svg_Attributes$fontVariant('small-caps'),
-					_elm_lang$svg$Svg_Attributes$fill(colour),
-					_elm_lang$svg$Svg_Attributes$transform(
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'translate(',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$svg$Svg_Attributes$x(
+						_elm_lang$core$Basics$toString(px)),
+						_elm_lang$svg$Svg_Attributes$y(
+						_elm_lang$core$Basics$toString(py)),
+						_elm_lang$svg$Svg_Attributes$fontSize('8'),
+						_elm_lang$svg$Svg_Attributes$fontFamily('arial,sans-serif'),
+						_elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+						_elm_lang$svg$Svg_Attributes$fontVariant('small-caps'),
+						_elm_lang$svg$Svg_Attributes$fill(colour),
+						_elm_lang$svg$Svg_Attributes$transform(
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(px * (1 - scale)),
+							'translate(',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								',',
+								_elm_lang$core$Basics$toString(px * (1 - scale)),
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(py * (1 - scale)),
+									',',
 									A2(
 										_elm_lang$core$Basics_ops['++'],
-										')',
+										_elm_lang$core$Basics$toString(py * (1 - scale)),
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											',scale(',
+											')',
 											A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(scale),
+												',scale(',
 												A2(
 													_elm_lang$core$Basics_ops['++'],
-													', ',
+													_elm_lang$core$Basics$toString(scale),
 													A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(scale),
-														')')))))))))),
-					_elm_lang$svg$Svg_Attributes$opacity(
-					_elm_lang$core$Basics$toString(op))
-				]),
+														', ',
+														A2(
+															_elm_lang$core$Basics_ops['++'],
+															_elm_lang$core$Basics$toString(scale),
+															')')))))))))),
+						_elm_lang$svg$Svg_Attributes$opacity(
+						_elm_lang$core$Basics$toString(op))
+					]),
+				attrs),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$svg$Svg$text(txt)
@@ -8965,7 +8968,16 @@ var _andybalaam$sootl$Main$baseMessage = F5(
 			return (_elm_lang$core$Native_Utils.cmp(op, 0) < 0) ? _elm_lang$core$Native_List.fromArray(
 				[]) : _elm_lang$core$Native_List.fromArray(
 				[
-					A6(_andybalaam$sootl$Main$textSvg, pp.x, pp.y, sz, '#ffffff', op, txt)
+					A7(
+					_andybalaam$sootl$Main$textSvg,
+					pp.x,
+					pp.y,
+					sz,
+					'#ffffff',
+					op,
+					txt,
+					_elm_lang$core$Native_List.fromArray(
+						[]))
 				]);
 		}
 	});
@@ -8989,6 +9001,7 @@ var _andybalaam$sootl$Main$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {screen: a, startTime: b, time: c, level: d, levelNum: e, player: f};
 	});
+var _andybalaam$sootl$Main$RestartClicked = {ctor: 'RestartClicked'};
 var _andybalaam$sootl$Main$BaseClicked = function (a) {
 	return {ctor: 'BaseClicked', _0: a};
 };
@@ -9047,7 +9060,16 @@ var _andybalaam$sootl$Main$message = F9(
 		var svgs = (_elm_lang$core$Native_Utils.cmp(op, 0) < 0) ? _elm_lang$core$Native_List.fromArray(
 			[]) : _elm_lang$core$Native_List.fromArray(
 			[
-				A6(_andybalaam$sootl$Main$textSvg, pp.x, pp.y, sz, '#ffffff', op, txt)
+				A7(
+				_andybalaam$sootl$Main$textSvg,
+				pp.x,
+				pp.y,
+				sz,
+				'#ffffff',
+				op,
+				txt,
+				_elm_lang$core$Native_List.fromArray(
+					[]))
 			]);
 		return {
 			hitboxes: _elm_lang$core$Native_List.fromArray(
@@ -9349,11 +9371,19 @@ var _andybalaam$sootl$Main$levelTime = function (model) {
 };
 var _andybalaam$sootl$Main$viewRestartButton = function (model) {
 	var t = _andybalaam$sootl$Main$levelTime(model);
-	return _andybalaam$sootl$Main$isPlayerAlive(model) ? _elm_lang$core$Native_List.fromArray(
-		[]) : _elm_lang$core$Native_List.fromArray(
-		[
-			A6(_andybalaam$sootl$Main$textSvg, 0, 80, 3, '#55ffff', 0.9, 'Try again')
-		]);
+	if (_andybalaam$sootl$Main$isPlayerAlive(model)) {
+		return _elm_lang$core$Native_List.fromArray(
+			[]);
+	} else {
+		var md = _elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$svg$Svg_Events$onMouseDown(_andybalaam$sootl$Main$RestartClicked)
+			]);
+		return _elm_lang$core$Native_List.fromArray(
+			[
+				A7(_andybalaam$sootl$Main$textSvg, 0, 80, 3, '#55ffff', 0.9, 'Try again', md)
+			]);
+	}
 };
 var _andybalaam$sootl$Main$viewBackgrounds = function (model) {
 	return _andybalaam$sootl$Main$levelDef(model.level).background(
@@ -9577,8 +9607,10 @@ var _andybalaam$sootl$Main$update = F2(
 					return A3(_andybalaam$sootl$Main$updateResize, _p9._0, _p9._1, model);
 				case 'NewFrame':
 					return A2(_andybalaam$sootl$Main$updateNewFrame, _p9._0, model);
-				default:
+				case 'BaseClicked':
 					return A2(_andybalaam$sootl$Main$updateMoveBase, _p9._0, model);
+				default:
+					return model;
 			}
 		}();
 		return {ctor: '_Tuple2', _0: m, _1: _elm_lang$core$Platform_Cmd$none};
