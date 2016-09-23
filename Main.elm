@@ -39,7 +39,7 @@ makeCircle : Float -> Float -> Float -> HitShape
 makeCircle x y r = Circle (LevelPoint {x = x, y = y}) r
 
 
-type alias Light =
+type alias SpriteFrame =
     { hitboxes : List HitShape
     , svgs     : List (Svg Msg)
     }
@@ -47,7 +47,7 @@ type alias Light =
 
 type alias LevelDef =
     { background : LevelTime -> List (Svg Msg)
-    , lights : List Sprite
+    , sprites : List Sprite
     , bases : List HitShape
     }
 
@@ -119,8 +119,6 @@ darkGreyBackground t =
     ]
 
 
-type alias SpriteFrame = Light
-
 -- A sprite takes:
 --   - the previous frame of the sprite
 --   - a time delta since the previous frame
@@ -128,7 +126,8 @@ type alias SpriteFrame = Light
 --   - a point give the position or position adjustment of the frame
 --   - the time or time adjustment
 -- and it returns the next frame
-type alias Sprite = SpriteFrame -> LevelTime -> Model -> LevelPoint -> LevelTime -> SpriteFrame
+type alias Sprite =
+    SpriteFrame -> LevelTime -> Model -> LevelPoint -> LevelTime -> SpriteFrame
 
 
 circleSprite : String -> Float -> Sprite
@@ -306,7 +305,7 @@ level0 =
     Level
         { background =
             darkGreyBackground
-        , lights =
+        , sprites =
             [ introCircle
             , introTwin
             ]
@@ -366,7 +365,7 @@ view model =
             (  (viewBackgrounds model)
             ++ (viewBases  model)
             ++ (viewPlayer model)
-            ++ (viewLights model)
+            ++ (viewSprites model)
             ++ (viewRestartButton model)
             ++ (viewScores model)
             )
@@ -406,19 +405,19 @@ intersect s1 s2 =
                 Circle p2 r2 -> (dist p1 p2) < (r1 + r2)
 
 
-isLit : Model -> LevelTime -> HitShape -> Bool
-isLit model time shape =
-    let intersectsLight time shape light =
-        List.any (intersect shape) (spriteFrame model light).hitboxes
+touchingSprite : Model -> LevelTime -> HitShape -> Bool
+touchingSprite model time shape =
+    let intersectsFrame time shape sprite =
+        List.any (intersect shape) (spriteFrame model sprite).hitboxes
     in
-        List.any (intersectsLight time shape) (levelDef model.level).lights
+        List.any (intersectsFrame time shape) (levelDef model.level).sprites
 
 
 viewBase : Model -> LevelTime -> Int -> HitShape -> List (Svg Msg)
 viewBase model time which baseShape =
     let
         f =
-            if (isLit model time baseShape) then
+            if (touchingSprite model time baseShape) then
                 "#550000"
             else
                 "#005500"
@@ -626,12 +625,12 @@ spriteFrame model sprite =
         sprite nullSpriteFrame nullTime model (LevelPoint {x=0, y=0}) time
 
 
-viewLights : Model -> List (Svg Msg)
-viewLights model =
+viewSprites : Model -> List (Svg Msg)
+viewSprites model =
     ( List.concat
         <| List.map
-            (\lig -> (spriteFrame model lig).svgs)
-            (levelDef model.level).lights
+            (\sprite -> (spriteFrame model sprite).svgs)
+            (levelDef model.level).sprites
     )
 
 
@@ -684,7 +683,7 @@ calcDeathTime pl model baseShape t =
     case pl.deathTime of
         Just dt -> Just dt
         Nothing ->
-            if (isLit model (levelTime model) baseShape) then
+            if (touchingSprite model (levelTime model) baseShape) then
                 Just t
             else
                 Nothing
