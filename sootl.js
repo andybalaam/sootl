@@ -9124,16 +9124,14 @@ var _andybalaam$sootl$Main$makeCircle = F3(
 				{x: x, y: y}),
 			r);
 	});
-var _andybalaam$sootl$Main$whiteCircle = F5(
-	function (lastFrame, deltaT, model, point, time) {
+var _andybalaam$sootl$Main$circleSprite = F7(
+	function (colour, size, lastFrame, deltaT, model, point, time) {
 		var o = '0.7';
-		var c = '#ffffff';
-		var s = 13;
 		var p = _andybalaam$sootl$Main$coords(point);
 		return {
 			hitboxes: _elm_lang$core$Native_List.fromArray(
 				[
-					A3(_andybalaam$sootl$Main$makeCircle, p.x, p.y, s)
+					A3(_andybalaam$sootl$Main$makeCircle, p.x, p.y, size)
 				]),
 			svgs: _elm_lang$core$Native_List.fromArray(
 				[
@@ -9146,8 +9144,8 @@ var _andybalaam$sootl$Main$whiteCircle = F5(
 							_elm_lang$svg$Svg_Attributes$cy(
 							_elm_lang$core$Basics$toString(p.y)),
 							_elm_lang$svg$Svg_Attributes$r(
-							_elm_lang$core$Basics$toString(s)),
-							_elm_lang$svg$Svg_Attributes$fill(c),
+							_elm_lang$core$Basics$toString(size)),
+							_elm_lang$svg$Svg_Attributes$fill(colour),
 							_elm_lang$svg$Svg_Attributes$opacity(o)
 						]),
 					_elm_lang$core$Native_List.fromArray(
@@ -9155,6 +9153,8 @@ var _andybalaam$sootl$Main$whiteCircle = F5(
 				])
 		};
 	});
+var _andybalaam$sootl$Main$yellowCircle = A2(_andybalaam$sootl$Main$circleSprite, '#ffff88', 7);
+var _andybalaam$sootl$Main$whiteCircle = A2(_andybalaam$sootl$Main$circleSprite, '#ffffff', 13);
 var _andybalaam$sootl$Main$noShape = A3(_andybalaam$sootl$Main$makeCircle, 0, 0, 0);
 var _andybalaam$sootl$Main$Level = function (a) {
 	return {ctor: 'Level', _0: a};
@@ -9218,7 +9218,66 @@ var _andybalaam$sootl$Main$slide = function (sliceTime) {
 		};
 	};
 };
-var _andybalaam$sootl$Main$mischiefCircle = function () {
+var _andybalaam$sootl$Main$introTwin = function () {
+	var msg = A4(
+		_andybalaam$sootl$Main$message,
+		_andybalaam$sootl$Main$ti(0.5),
+		_andybalaam$sootl$Main$ti(3),
+		A2(_andybalaam$sootl$Main$pt, 0, 17),
+		'and this!');
+	var c = _andybalaam$sootl$Main$yellowCircle;
+	var andThisCircle = A2(_andybalaam$sootl$Main$parallel, msg, c);
+	return A3(
+		_andybalaam$sootl$Main$timeSlice,
+		_andybalaam$sootl$Main$ti(5.5),
+		A2(
+			_andybalaam$sootl$Main$moved,
+			A2(_andybalaam$sootl$Main$pt, -200, 200),
+			c),
+		A5(
+			_andybalaam$sootl$Main$slide,
+			_andybalaam$sootl$Main$ti(1),
+			A2(_andybalaam$sootl$Main$pt, -200, 200),
+			A2(_andybalaam$sootl$Main$pt, 15, 40),
+			c,
+			A3(
+				_andybalaam$sootl$Main$timeSlice,
+				_andybalaam$sootl$Main$ti(3.5),
+				A2(
+					_andybalaam$sootl$Main$moved,
+					A2(_andybalaam$sootl$Main$pt, 15, 40),
+					andThisCircle),
+				A5(
+					_andybalaam$sootl$Main$slide,
+					_andybalaam$sootl$Main$ti(4),
+					A2(_andybalaam$sootl$Main$pt, 15, 40),
+					A2(_andybalaam$sootl$Main$pt, 95, 40),
+					c,
+					A5(
+						_andybalaam$sootl$Main$slide,
+						_andybalaam$sootl$Main$ti(1),
+						A2(_andybalaam$sootl$Main$pt, 95, 40),
+						A2(_andybalaam$sootl$Main$pt, 95, 0),
+						c,
+						A3(
+							_andybalaam$sootl$Main$timeSlice,
+							_andybalaam$sootl$Main$ti(12),
+							A2(
+								_andybalaam$sootl$Main$moved,
+								A2(_andybalaam$sootl$Main$pt, 95, 0),
+								c),
+							A5(
+								_andybalaam$sootl$Main$slide,
+								_andybalaam$sootl$Main$ti(8),
+								A2(_andybalaam$sootl$Main$pt, 95, 0),
+								A2(_andybalaam$sootl$Main$pt, -95, 0),
+								c,
+								A2(
+									_andybalaam$sootl$Main$moved,
+									A2(_andybalaam$sootl$Main$pt, 15, 40),
+									c))))))));
+}();
+var _andybalaam$sootl$Main$introCircle = function () {
 	var msg2 = A4(
 		_andybalaam$sootl$Main$message,
 		_andybalaam$sootl$Main$ti(0.5),
@@ -9335,7 +9394,7 @@ var _andybalaam$sootl$Main$level0 = _andybalaam$sootl$Main$Level(
 	{
 		background: _andybalaam$sootl$Main$darkGreyBackground,
 		lights: _elm_lang$core$Native_List.fromArray(
-			[_andybalaam$sootl$Main$mischiefCircle]),
+			[_andybalaam$sootl$Main$introCircle, _andybalaam$sootl$Main$introTwin]),
 		bases: _elm_lang$core$Native_List.fromArray(
 			[
 				A3(_andybalaam$sootl$Main$makeCircle, -40, 0, 20),
