@@ -8989,13 +8989,13 @@ var _andybalaam$sootl$Main$LevelPointDef = F2(
 	function (a, b) {
 		return {x: a, y: b};
 	});
-var _andybalaam$sootl$Main$Light = F2(
+var _andybalaam$sootl$Main$SpriteFrame = F2(
 	function (a, b) {
 		return {hitboxes: a, svgs: b};
 	});
 var _andybalaam$sootl$Main$LevelDef = F3(
 	function (a, b, c) {
-		return {background: a, lights: b, bases: c};
+		return {background: a, sprites: b, bases: c};
 	});
 var _andybalaam$sootl$Main$Model = F7(
 	function (a, b, c, d, e, f, g) {
@@ -9393,7 +9393,7 @@ var _andybalaam$sootl$Main$introCircle = function () {
 var _andybalaam$sootl$Main$level0 = _andybalaam$sootl$Main$Level(
 	{
 		background: _andybalaam$sootl$Main$darkGreyBackground,
-		lights: _elm_lang$core$Native_List.fromArray(
+		sprites: _elm_lang$core$Native_List.fromArray(
 			[_andybalaam$sootl$Main$introCircle, _andybalaam$sootl$Main$introTwin]),
 		bases: _elm_lang$core$Native_List.fromArray(
 			[
@@ -9610,19 +9610,19 @@ var _andybalaam$sootl$Main$spriteFrame = F2(
 				{x: 0, y: 0}),
 			time);
 	});
-var _andybalaam$sootl$Main$isLit = F3(
+var _andybalaam$sootl$Main$touchingSprite = F3(
 	function (model, time, shape) {
-		var intersectsLight = F3(
-			function (time, shape, light) {
+		var intersectsFrame = F3(
+			function (time, shape, sprite) {
 				return A2(
 					_elm_lang$core$List$any,
 					_andybalaam$sootl$Main$intersect(shape),
-					A2(_andybalaam$sootl$Main$spriteFrame, model, light).hitboxes);
+					A2(_andybalaam$sootl$Main$spriteFrame, model, sprite).hitboxes);
 			});
 		return A2(
 			_elm_lang$core$List$any,
-			A2(intersectsLight, time, shape),
-			_andybalaam$sootl$Main$levelDef(model.level).lights);
+			A2(intersectsFrame, time, shape),
+			_andybalaam$sootl$Main$levelDef(model.level).sprites);
 	});
 var _andybalaam$sootl$Main$viewBase = F4(
 	function (model, time, which, baseShape) {
@@ -9632,7 +9632,7 @@ var _andybalaam$sootl$Main$viewBase = F4(
 				_andybalaam$sootl$Main$BaseClicked(which))
 			]) : _elm_lang$core$Native_List.fromArray(
 			[]);
-		var f = A3(_andybalaam$sootl$Main$isLit, model, time, baseShape) ? '#550000' : '#005500';
+		var f = A3(_andybalaam$sootl$Main$touchingSprite, model, time, baseShape) ? '#550000' : '#005500';
 		var _p7 = baseShape;
 		var p = _andybalaam$sootl$Main$coords(_p7._0);
 		return _elm_lang$core$Native_List.fromArray(
@@ -9683,20 +9683,20 @@ var _andybalaam$sootl$Main$calcDeathTime = F4(
 			return _elm_lang$core$Maybe$Just(_p8._0);
 		} else {
 			return A3(
-				_andybalaam$sootl$Main$isLit,
+				_andybalaam$sootl$Main$touchingSprite,
 				model,
 				_andybalaam$sootl$Main$levelTime(model),
 				baseShape) ? _elm_lang$core$Maybe$Just(t) : _elm_lang$core$Maybe$Nothing;
 		}
 	});
-var _andybalaam$sootl$Main$viewLights = function (model) {
+var _andybalaam$sootl$Main$viewSprites = function (model) {
 	return _elm_lang$core$List$concat(
 		A2(
 			_elm_lang$core$List$map,
-			function (lig) {
-				return A2(_andybalaam$sootl$Main$spriteFrame, model, lig).svgs;
+			function (sprite) {
+				return A2(_andybalaam$sootl$Main$spriteFrame, model, sprite).svgs;
 			},
-			_andybalaam$sootl$Main$levelDef(model.level).lights));
+			_andybalaam$sootl$Main$levelDef(model.level).sprites));
 };
 var _andybalaam$sootl$Main$view = function (model) {
 	var sh = model.screen.height - 0;
@@ -9752,7 +9752,7 @@ var _andybalaam$sootl$Main$view = function (model) {
 							_andybalaam$sootl$Main$viewPlayer(model),
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_andybalaam$sootl$Main$viewLights(model),
+								_andybalaam$sootl$Main$viewSprites(model),
 								A2(
 									_elm_lang$core$Basics_ops['++'],
 									_andybalaam$sootl$Main$viewRestartButton(model),
