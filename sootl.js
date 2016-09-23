@@ -9274,7 +9274,7 @@ var _andybalaam$sootl$Main$introTwin = function () {
 								c,
 								A2(
 									_andybalaam$sootl$Main$moved,
-									A2(_andybalaam$sootl$Main$pt, 15, 40),
+									A2(_andybalaam$sootl$Main$pt, -95, 0),
 									c))))))));
 }();
 var _andybalaam$sootl$Main$introCircle = function () {
@@ -9466,7 +9466,7 @@ var _andybalaam$sootl$Main$viewScores = function (model) {
 		[
 			A7(
 			_andybalaam$sootl$Main$textSvg,
-			-90,
+			-75,
 			-90,
 			1,
 			'#ffffff',
@@ -9479,7 +9479,7 @@ var _andybalaam$sootl$Main$viewScores = function (model) {
 				[])),
 			A7(
 			_andybalaam$sootl$Main$textSvg,
-			90,
+			75,
 			-90,
 			1,
 			'#ffffff',
