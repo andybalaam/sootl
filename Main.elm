@@ -131,28 +131,33 @@ type alias SpriteFrame = Light
 type alias Sprite = SpriteFrame -> LevelTime -> Model -> LevelPoint -> LevelTime -> SpriteFrame
 
 
-
-whiteCircle : Sprite
-whiteCircle lastFrame deltaT model point time =
+circleSprite : String -> Float -> Sprite
+circleSprite colour size lastFrame deltaT model point time =
     let
         p = coords point
-        s = 13
-        c = "#ffffff"
         o = "0.7"
     in
-        { hitboxes = [ makeCircle p.x p.y s ]
+        { hitboxes = [ makeCircle p.x p.y size ]
         , svgs =
             [ circle
                 [ cx <| toString p.x
                 , cy <| toString p.y
-                , r  <| toString s
-                , fill c
+                , r  <| toString size
+                , fill colour
                 , opacity o
                 ]
                 []
             ]
         }
 
+
+
+yellowCircle : Sprite
+yellowCircle = circleSprite "#ffff88" 7
+
+
+whiteCircle : Sprite
+whiteCircle = circleSprite "#ffffff" 13
 
 moved : LevelPoint -> Sprite -> Sprite
 moved offsetP sprite lastFrame deltaT model point time =
@@ -256,8 +261,25 @@ message startT endT deltaP txt lastFrame deltaT model point time =
         }
 
 
-mischiefCircle : Sprite
-mischiefCircle =
+introTwin : Sprite
+introTwin =
+    let
+        c = yellowCircle
+        msg = message (ti 0.5) (ti 3) (pt 0 17) "and this!"
+        andThisCircle = parallel msg c
+    in
+           timeSlice (ti 5.5) (moved (pt -200 200) c)
+        <| slide (ti 1) (pt -200 200) (pt 15 40) c
+        <| timeSlice (ti 3.5) (moved (pt 15 40) andThisCircle)
+        <| slide (ti 4) (pt 15 40) (pt 95 40) c
+        <| slide (ti 1) (pt 95 40) (pt 95 0) c
+        <| timeSlice (ti 12) (moved (pt 95 0) c)
+        <| slide (ti 8) (pt 95 0) (pt -95 0) c
+        <| moved (pt -95 0) c
+
+
+introCircle : Sprite
+introCircle =
     let
         c = whiteCircle
         msg1 = message (ti 0.5) (ti 3) (pt 0 -15) "Stay away"
@@ -285,7 +307,8 @@ level0 =
         { background =
             darkGreyBackground
         , lights =
-            [ mischiefCircle
+            [ introCircle
+            , introTwin
             ]
         , bases =
             [ makeCircle -40 0 20
@@ -297,6 +320,7 @@ level0 =
 init : Flags -> (Model, Cmd Msg)
 init flags =
     ( initModel flags (ti 0), Cmd.none )
+
 
 initModel : Flags -> LevelTime -> Model
 initModel flags bestTime =
