@@ -604,8 +604,8 @@ viewScores model =
         sc = round <| 20 * (secs (levelTime model))
         hi = round <| 20 * (secs model.bestTime)
     in
-        [ textSvg -90 -90 1 "#ffffff" 1 ("Score: " ++ (toString sc)) []
-        , textSvg  90 -90 1 "#ffffff" 1 ("High: "  ++ (toString hi)) []
+        [ textSvg -75 -90 1 "#ffffff" 1 ("Score: " ++ (toString sc)) []
+        , textSvg  75 -90 1 "#ffffff" 1 ("High: "  ++ (toString hi)) []
         ]
 
 
