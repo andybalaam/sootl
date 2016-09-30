@@ -9629,7 +9629,12 @@ var _andybalaam$sootl$Main$viewBase = F4(
 		var md = _andybalaam$sootl$Main$isPlayerAlive(model) ? _elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$svg$Svg_Events$onMouseDown(
-				_andybalaam$sootl$Main$BaseClicked(which))
+				_andybalaam$sootl$Main$BaseClicked(which)),
+				A2(
+				_elm_lang$svg$Svg_Events$on,
+				'touchstart',
+				_elm_lang$core$Json_Decode$succeed(
+					_andybalaam$sootl$Main$BaseClicked(which)))
 			]) : _elm_lang$core$Native_List.fromArray(
 			[]);
 		var f = A3(_andybalaam$sootl$Main$touchingSprite, model, time, baseShape) ? '#550000' : '#005500';
