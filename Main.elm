@@ -1,6 +1,7 @@
 import AnimationFrame exposing (times)
 import Html exposing (Html)
 import Html.App exposing (programWithFlags)
+import Json.Decode
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (..)
@@ -423,7 +424,9 @@ viewBase model time which baseShape =
                 "#005500"
         md =
             if isPlayerAlive model then
-                [ onMouseDown (BaseClicked which) ]
+                [ onMouseDown (BaseClicked which)
+                , on "touchstart" (Json.Decode.succeed (BaseClicked which))
+                ]
             else
                 []
     in
