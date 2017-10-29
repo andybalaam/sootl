@@ -13,13 +13,13 @@ Play: https://andybalaam.github.io/sootl/
 
     sudo apt-get install nodejs-legacy npm
     sudo npm install -g elm
+    sudo npm install -g elm-live
 
     git clone https://github.com/andybalaam/sootl.git
-    cid sootl
+    cd sootl
+    elm-package install
 
-    make setup
-    make run
-    sensible-browser http://localhost:8000/index.html
+    elm-live Main.elm --ouput=sootl.js --open
 
 ## License
 
